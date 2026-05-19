@@ -1,63 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(20px);
-  --accent-blue: #4fc3f7;
-  --accent-purple: #a78bfa;
-  --accent-gradient: linear-gradient(135deg, #4fc3f7, #a78bfa);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.65);
-  --text-muted: rgba(255, 255, 255, 0.4);
-  --dark-bg: #050810;
-  --section-bg: #07090f;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.08);
+@theme {
   --font-body: 'Inter', sans-serif;
   --font-heading: 'Syne', sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: #050810; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+#root { width: 100%; }
+::selection { background: rgba(79,195,247,0.3); color: #fff; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #050810; }
+::-webkit-scrollbar-thumb { background: rgba(79,195,247,0.25); border-radius: 3px; }
 
-body {
-  background: var(--dark-bg);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
+@keyframes spin-slow  { to { transform: rotate(360deg); } }
+@keyframes spin-rev   { to { transform: rotate(-360deg); } }
+@keyframes bounce-y   { 0%,100% { transform: translateX(-50%) translateY(0); opacity:.45; } 50% { transform: translateX(-50%) translateY(6px); opacity:.7; } }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-}
-
-::selection {
-  background: rgba(79, 195, 247, 0.3);
-  color: #fff;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--dark-bg);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(79, 195, 247, 0.3);
-  border-radius: 3px;
-}
+.anim-spin-slow  { animation: spin-slow  12s linear infinite; }
+.anim-spin-rev   { animation: spin-rev   18s linear infinite; }
+.anim-spin-slow2 { animation: spin-slow  26s linear infinite; }
+.anim-bounce-y   { animation: bounce-y    2s ease-in-out infinite; }

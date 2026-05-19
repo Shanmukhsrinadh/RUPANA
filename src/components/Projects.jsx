@@ -1,157 +1,78 @@
 import { useState, useEffect, forwardRef } from 'react'
-import './Projects.css'
 
 const PROJECTS = [
-  {
-    id: 1,
-    title: 'Lumora Finance',
-    category: 'Web App',
-    tags: ['UI/UX', 'Development'],
-    desc: 'A clean fintech dashboard with real-time analytics and portfolio tracking for modern investors.',
-    gradient: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
-    accent: '#4fc3f7',
-    year: '2024',
-  },
-  {
-    id: 2,
-    title: 'Verdant Studio',
-    category: 'Branding',
-    tags: ['Identity', 'Design System'],
-    desc: 'Full visual identity for a sustainable architecture firm — logo, typography, and brand guidelines.',
-    gradient: 'linear-gradient(135deg, #0d1b0e, #1a3a1e, #2d6a35)',
-    accent: '#86efac',
-    year: '2024',
-  },
-  {
-    id: 3,
-    title: 'Orbis Events',
-    category: 'Landing Page',
-    tags: ['Motion', 'Development'],
-    desc: 'An immersive event landing page with scroll-based animations and real-time ticket availability.',
-    gradient: 'linear-gradient(135deg, #1a0533, #3b0764, #6d28d9)',
-    accent: '#c4b5fd',
-    year: '2025',
-  },
+  { id:1, title:'Lumora Finance', cat:'Web App', tags:['UI/UX','Dev'], desc:'Fintech dashboard with real-time analytics and portfolio tracking for modern investors.', bg:'linear-gradient(135deg,#0f2027,#203a43,#2c5364)', accent:'#4fc3f7', year:'2024' },
+  { id:2, title:'Verdant Studio', cat:'Branding', tags:['Identity','Design'], desc:'Full visual identity for a sustainable architecture firm — logo, type, and brand guidelines.', bg:'linear-gradient(135deg,#0d1b0e,#1a3a1e,#2d6a35)', accent:'#86efac', year:'2024' },
+  { id:3, title:'Orbis Events', cat:'Landing Page', tags:['Motion','Dev'], desc:'Immersive event page with scroll animations and real-time ticket availability.', bg:'linear-gradient(135deg,#1a0533,#3b0764,#6d28d9)', accent:'#c4b5fd', year:'2025' },
 ]
-
 const MARKETPLACE = [
-  {
-    id: 4,
-    title: 'Nova SaaS Kit',
-    category: 'Template',
-    tags: ['React', 'Tailwind'],
-    desc: 'A complete SaaS starter with auth pages, dashboard, billing UI, and onboarding flows.',
-    gradient: 'linear-gradient(135deg, #0c1445, #1e3a8a, #2563eb)',
-    accent: '#93c5fd',
-    price: '$49',
-    year: '2025',
-  },
-  {
-    id: 5,
-    title: 'Folio Dark',
-    category: 'Portfolio',
-    tags: ['Minimal', 'Animated'],
-    desc: 'A sleek dark-mode portfolio template for designers and developers with smooth page transitions.',
-    gradient: 'linear-gradient(135deg, #0f0f0f, #1c1c2e, #2d2d44)',
-    accent: '#f0abfc',
-    price: '$29',
-    year: '2025',
-  },
-  {
-    id: 6,
-    title: 'Market Pro',
-    category: 'E-commerce',
-    tags: ['Shopify', 'Conversion'],
-    desc: 'A high-converting e-commerce theme with product carousels, quick-add, and mobile-first design.',
-    gradient: 'linear-gradient(135deg, #1c0a0a, #3d1515, #7c2d2d)',
-    accent: '#fca5a5',
-    price: '$79',
-    year: '2025',
-  },
+  { id:4, title:'Nova SaaS Kit', cat:'Template', tags:['React','Tailwind'], desc:'Complete SaaS starter with auth, dashboard, billing UI, and onboarding flows.', bg:'linear-gradient(135deg,#0c1445,#1e3a8a,#2563eb)', accent:'#93c5fd', price:'$49', year:'2025' },
+  { id:5, title:'Folio Dark', cat:'Portfolio', tags:['Minimal','Animated'], desc:'Sleek dark-mode portfolio for designers with smooth page transitions.', bg:'linear-gradient(135deg,#0f0f0f,#1c1c2e,#2d2d44)', accent:'#f0abfc', price:'$29', year:'2025' },
+  { id:6, title:'Market Pro', cat:'E-commerce', tags:['Shopify','CRO'], desc:'High-converting e-commerce theme with carousels, quick-add, and mobile-first design.', bg:'linear-gradient(135deg,#1c0a0a,#3d1515,#7c2d2d)', accent:'#fca5a5', price:'$79', year:'2025' },
 ]
 
 const Projects = forwardRef(function Projects(_, ref) {
-  const [activeTab, setActiveTab] = useState('projects')
-  const [animating, setAnimating] = useState(false)
+  const [tab, setTab] = useState('projects')
+  const [fading, setFading] = useState(false)
 
   useEffect(() => {
     const el = ref?.current
     if (!el) return
-    const handler = (e) => switchTab(e.detail)
+    const handler = e => switchTab(e.detail)
     el.addEventListener('setTab', handler)
     return () => el.removeEventListener('setTab', handler)
-  }, [ref])
+  }, [ref, tab])
 
-  const switchTab = (tab) => {
-    if (tab === activeTab) return
-    setAnimating(true)
-    setTimeout(() => {
-      setActiveTab(tab)
-      setAnimating(false)
-    }, 200)
+  const switchTab = t => {
+    if (t === tab) return
+    setFading(true)
+    setTimeout(() => { setTab(t); setFading(false) }, 180)
   }
 
-  const items = activeTab === 'projects' ? PROJECTS : MARKETPLACE
+  const items = tab === 'projects' ? PROJECTS : MARKETPLACE
 
   return (
-    <section className="projects" ref={ref} id="projects">
-      <div className="projects__container">
-        <div className="projects__header">
-          <div className="projects__label">Our Work</div>
-          <h2 className="projects__title">
-            {activeTab === 'projects' ? 'Selected Projects' : 'Marketplace'}
+    <section ref={ref} id="projects" className="py-28 relative" style={{ background: '#07090f' }}>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px" style={{ background: 'linear-gradient(to right,transparent,rgba(79,195,247,.3),transparent)' }} />
+      <div className="max-w-5xl mx-auto px-8">
+        <div className="text-center mb-12">
+          <p className="text-sky-400 text-[11px] tracking-[3px] uppercase font-semibold mb-3">Our Work</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3" style={{ fontFamily: 'Syne,sans-serif' }}>
+            {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
           </h2>
-          <p className="projects__subtitle">
-            {activeTab === 'projects'
-              ? 'Crafted experiences built for real impact.'
-              : 'Ready-to-launch templates and design systems.'}
-          </p>
+          <p className="text-white/55 text-sm">{tab === 'projects' ? 'Crafted experiences built for real impact.' : 'Ready-to-launch templates and design systems.'}</p>
         </div>
 
-        <div className="projects__toggle">
-          <button
-            className={`projects__toggle-btn ${activeTab === 'projects' ? 'active' : ''}`}
-            onClick={() => switchTab('projects')}
-          >
-            Projects
-          </button>
-          <button
-            className={`projects__toggle-btn ${activeTab === 'marketplace' ? 'active' : ''}`}
-            onClick={() => switchTab('marketplace')}
-          >
-            Marketplace
-          </button>
+        <div className="flex justify-center mb-14">
+          <div className="flex p-1 rounded-full" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)' }}>
+            {['projects','marketplace'].map(t => (
+              <button key={t} onClick={() => switchTab(t)}
+                className={`px-7 py-2 rounded-full text-sm font-medium capitalize transition-all cursor-pointer border-none ${tab === t ? 'text-white' : 'text-white/50 hover:text-white bg-transparent'}`}
+                style={tab === t ? { background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', boxShadow: '0 4px 16px rgba(79,195,247,.25)' } : {}}>
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className={`projects__grid ${animating ? 'projects__grid--fade' : ''}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-5 transition-opacity duration-200 ${fading ? 'opacity-0' : 'opacity-100'}`}>
           {items.map((item, i) => (
-            <div
-              className="project-card"
-              key={item.id}
-              style={{ '--delay': `${i * 0.07}s` }}
-            >
-              <div className="project-card__visual" style={{ background: item.gradient }}>
-                <div className="project-card__glow" style={{ '--card-accent': item.accent }} />
-                <div className="project-card__num">0{i + 1}</div>
-                {item.price && (
-                  <div className="project-card__price">{item.price}</div>
-                )}
+            <div key={item.id} className="anim-card-in rounded-2xl overflow-hidden cursor-pointer group transition-all hover:-translate-y-1 hover:shadow-2xl" style={{ animationDelay: `${i * 0.07}s`, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="h-44 relative overflow-hidden" style={{ background: item.bg }}>
+                <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity" style={{ background: `radial-gradient(circle at 50% 120%, ${item.accent}, transparent 60%)` }} />
+                <span className="absolute top-3.5 left-4 text-[11px] font-bold tracking-[2px] text-white/25">0{i + 1}</span>
+                {item.price && <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,.2)' }}>{item.price}</span>}
               </div>
-              <div className="project-card__body">
-                <div className="project-card__meta">
-                  <span className="project-card__category">{item.category}</span>
-                  <span className="project-card__year">{item.year}</span>
+              <div className="p-5">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: item.accent }}>{item.cat}</span>
+                  <span className="text-[11px] text-white/30">{item.year}</span>
                 </div>
-                <h3 className="project-card__title">{item.title}</h3>
-                <p className="project-card__desc">{item.desc}</p>
-                <div className="project-card__tags">
-                  {item.tags.map(tag => (
-                    <span key={tag} className="project-card__tag">{tag}</span>
-                  ))}
+                <h3 className="text-white font-bold text-lg mb-2 leading-tight" style={{ fontFamily: 'Syne,sans-serif' }}>{item.title}</h3>
+                <p className="text-white/55 text-[13px] leading-relaxed mb-3">{item.desc}</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {item.tags.map(t => <span key={t} className="text-[11px] px-2.5 py-0.5 rounded-full text-white/40 font-medium" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,.09)' }}>{t}</span>)}
                 </div>
-              </div>
-              <div className="project-card__arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
               </div>
             </div>
           ))}

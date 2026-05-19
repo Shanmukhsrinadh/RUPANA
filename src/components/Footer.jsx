@@ -1,62 +1,51 @@
-import './Footer.css'
-
 export default function Footer({ onProjects, onMarketplace, onAbout }) {
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   return (
-    <footer className="footer">
-      <div className="footer__top-line" />
-      <div className="footer__container">
-        <div className="footer__main">
-          <div className="footer__brand">
-            <div className="footer__logo">
-              <span className="footer__logo-icon">R</span>
-              <span className="footer__logo-text">RUPANA</span>
+    <footer className="relative overflow-hidden" style={{ background: '#030508' }}>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[200px] pointer-events-none" style={{ background: 'radial-gradient(ellipse,rgba(79,195,247,.04),transparent 70%)' }} />
+      <div className="w-full h-px" style={{ background: 'linear-gradient(to right,transparent,rgba(255,255,255,.08),transparent)' }} />
+
+      <div className="max-w-5xl mx-auto px-8 pt-16 pb-9">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-12">
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', fontFamily: 'Syne,sans-serif' }}>R</span>
+              <span className="text-white text-sm font-bold tracking-widest" style={{ fontFamily: 'Syne,sans-serif' }}>RUPANA</span>
             </div>
-            <p className="footer__tagline">
-              Design-led digital agency building products that move people.
-            </p>
-            <div className="footer__socials">
-              <a href="#" className="footer__social" aria-label="Twitter">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-              <a href="#" className="footer__social" aria-label="Instagram">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-              </a>
-              <a href="#" className="footer__social" aria-label="LinkedIn">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-              </a>
+            <p className="text-white/35 text-[13px] leading-relaxed mb-5">Design-led digital agency building products that move people.</p>
+            <div className="flex gap-2">
+              {[
+                'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z',
+              ].map((d, i) => (
+                <a key={i} href="#" className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 transition-all hover:text-white hover:bg-white/10" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,.08)' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d={d}/></svg>
+                </a>
+              ))}
             </div>
           </div>
 
-          <div className="footer__links-group">
-            <span className="footer__links-title">Navigate</span>
-            <button className="footer__link" onClick={scrollToTop}>Home</button>
-            <button className="footer__link" onClick={onProjects}>Projects</button>
-            <button className="footer__link" onClick={onMarketplace}>Marketplace</button>
-            <button className="footer__link" onClick={onAbout}>About</button>
-          </div>
-
-          <div className="footer__links-group">
-            <span className="footer__links-title">Services</span>
-            <span className="footer__link footer__link--text">Web Design</span>
-            <span className="footer__link footer__link--text">Branding</span>
-            <span className="footer__link footer__link--text">E-commerce</span>
-            <span className="footer__link footer__link--text">Marketing</span>
-          </div>
-
-          <div className="footer__links-group">
-            <span className="footer__links-title">Contact</span>
-            <a href="mailto:hello@rupana.studio" className="footer__link">hello@rupana.studio</a>
-            <a href="tel:+1234567890" className="footer__link">+1 (234) 567-890</a>
-          </div>
+          {[
+            { title: 'Navigate', links: [['Home', scrollTop],['Projects', onProjects],['Marketplace', onMarketplace],['About', onAbout]] },
+            { title: 'Services', links: [['Web Design'],['Branding'],['E-commerce'],['Marketing']] },
+            { title: 'Contact', links: [['hello@rupana.studio'],['Instagram'],['Twitter']] },
+          ].map(({ title, links }) => (
+            <div key={title}>
+              <p className="text-white text-[11px] font-bold tracking-[2px] uppercase mb-5">{title}</p>
+              <div className="flex flex-col gap-3">
+                {links.map(([label, fn]) => (
+                  <button key={label} onClick={fn} className={`text-[13.5px] text-white/40 text-left bg-transparent border-none p-0 ${fn ? 'cursor-pointer hover:text-white transition-colors' : 'cursor-default'}`}>{label}</button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="footer__bottom">
-          <span className="footer__copy">© 2025 Rupana. All rights reserved.</span>
-          <button className="footer__back-top" onClick={scrollToTop}>
+        <div className="flex items-center justify-between pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <span className="text-[12.5px] text-white/30">© 2025 Rupana. All rights reserved.</span>
+          <button onClick={scrollTop} className="text-[12.5px] text-white/30 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
             Back to top
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
           </button>
         </div>
       </div>

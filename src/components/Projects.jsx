@@ -32,46 +32,67 @@ const Projects = forwardRef(function Projects(_, ref) {
   const items = tab === 'projects' ? PROJECTS : MARKETPLACE
 
   return (
-    <section ref={ref} id="projects" className="py-28 relative" style={{ background: '#07090f' }}>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px" style={{ background: 'linear-gradient(to right,transparent,rgba(79,195,247,.3),transparent)' }} />
-      <div className="max-w-5xl mx-auto px-8">
-        <div className="text-center mb-12">
-          <p className="text-sky-400 text-[11px] tracking-[3px] uppercase font-semibold mb-3">Our Work</p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3" style={{ fontFamily: 'Syne,sans-serif' }}>
+    <section ref={ref} id="projects" style={{ background: '#07090f', padding: '112px 0 96px', position: 'relative', overflow: 'hidden' }}>
+      {/* top line */}
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 600, height: 1, background: 'linear-gradient(to right,transparent,rgba(79,195,247,.3),transparent)' }} />
+
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 32px' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <p style={{ color: '#4fc3f7', fontSize: 11, letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 600, marginBottom: 12 }}>Our Work</p>
+          <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(32px,5vw,52px)', fontWeight: 800, color: '#fff', marginBottom: 12, lineHeight: 1.1 }}>
             {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
           </h2>
-          <p className="text-white/55 text-sm">{tab === 'projects' ? 'Crafted experiences built for real impact.' : 'Ready-to-launch templates and design systems.'}</p>
+          <p style={{ color: 'rgba(255,255,255,.55)', fontSize: 15 }}>
+            {tab === 'projects' ? 'Crafted experiences built for real impact.' : 'Ready-to-launch templates and design systems.'}
+          </p>
         </div>
 
-        <div className="flex justify-center mb-14">
-          <div className="flex p-1 rounded-full" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)' }}>
-            {['projects','marketplace'].map(t => (
-              <button key={t} onClick={() => switchTab(t)}
-                className={`px-7 py-2 rounded-full text-sm font-medium capitalize transition-all cursor-pointer border-none ${tab === t ? 'text-white' : 'text-white/50 hover:text-white bg-transparent'}`}
-                style={tab === t ? { background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', boxShadow: '0 4px 16px rgba(79,195,247,.25)' } : {}}>
-                {t}
-              </button>
+        {/* Toggle */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 52 }}>
+          <div style={{ display: 'flex', padding: 5, borderRadius: 100, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', backdropFilter: 'blur(12px)' }}>
+            {['projects', 'marketplace'].map(t => (
+              <button key={t} onClick={() => switchTab(t)} style={{
+                padding: '8px 28px', borderRadius: 100, border: 'none', cursor: 'pointer',
+                fontFamily: 'Inter,sans-serif', fontSize: 13.5, fontWeight: 500,
+                textTransform: 'capitalize', transition: 'all .25s',
+                color: tab === t ? '#fff' : 'rgba(255,255,255,.45)',
+                background: tab === t ? 'linear-gradient(135deg,#4fc3f7,#a78bfa)' : 'transparent',
+                boxShadow: tab === t ? '0 4px 16px rgba(79,195,247,.25)' : 'none',
+              }}>{t}</button>
             ))}
           </div>
         </div>
 
-        <div className={`grid grid-cols-1 md:grid-cols-3 gap-5 transition-opacity duration-200 ${fading ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, opacity: fading ? 0 : 1, transition: 'opacity .18s' }}>
           {items.map((item, i) => (
-            <div key={item.id} className="anim-card-in rounded-2xl overflow-hidden cursor-pointer group transition-all hover:-translate-y-1 hover:shadow-2xl" style={{ animationDelay: `${i * 0.07}s`, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div className="h-44 relative overflow-hidden" style={{ background: item.bg }}>
-                <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity" style={{ background: `radial-gradient(circle at 50% 120%, ${item.accent}, transparent 60%)` }} />
-                <span className="absolute top-3.5 left-4 text-[11px] font-bold tracking-[2px] text-white/25">0{i + 1}</span>
-                {item.price && <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,.2)' }}>{item.price}</span>}
+            <div key={item.id} style={{
+              background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)',
+              borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
+              animation: `card-in .4s ease ${i * 0.07}s both`,
+              transition: 'transform .3s, box-shadow .3s, border-color .3s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 48px rgba(0,0,0,.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.16)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)' }}>
+              {/* Visual */}
+              <div style={{ height: 176, position: 'relative', overflow: 'hidden', background: item.bg }}>
+                <div style={{ position: 'absolute', bottom: '-30px', left: '50%', transform: 'translateX(-50%)', width: 120, height: 120, borderRadius: '50%', background: item.accent, filter: 'blur(40px)', opacity: 0.35 }} />
+                <span style={{ position: 'absolute', top: 14, left: 16, fontFamily: 'Syne,sans-serif', fontSize: 11, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.22)' }}>0{i + 1}</span>
+                {item.price && (
+                  <span style={{ position: 'absolute', top: 12, right: 12, padding: '4px 12px', borderRadius: 50, fontSize: 12, fontWeight: 700, color: '#fff', background: 'rgba(255,255,255,.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,.2)' }}>{item.price}</span>
+                )}
               </div>
-              <div className="p-5">
-                <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: item.accent }}>{item.cat}</span>
-                  <span className="text-[11px] text-white/30">{item.year}</span>
+              {/* Body */}
+              <div style={{ padding: '18px 20px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: item.accent }}>{item.cat}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,.3)' }}>{item.year}</span>
                 </div>
-                <h3 className="text-white font-bold text-lg mb-2 leading-tight" style={{ fontFamily: 'Syne,sans-serif' }}>{item.title}</h3>
-                <p className="text-white/55 text-[13px] leading-relaxed mb-3">{item.desc}</p>
-                <div className="flex gap-1.5 flex-wrap">
-                  {item.tags.map(t => <span key={t} className="text-[11px] px-2.5 py-0.5 rounded-full text-white/40 font-medium" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,.09)' }}>{t}</span>)}
+                <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, lineHeight: 1.2 }}>{item.title}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,.55)', lineHeight: 1.6, marginBottom: 12 }}>{item.desc}</p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {item.tags.map(t => <span key={t} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 50, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.09)', color: 'rgba(255,255,255,.4)', fontWeight: 500 }}>{t}</span>)}
                 </div>
               </div>
             </div>

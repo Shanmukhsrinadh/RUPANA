@@ -1,51 +1,80 @@
 export default function Footer({ onProjects, onMarketplace, onAbout }) {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
-  return (
-    <footer className="relative overflow-hidden" style={{ background: '#030508' }}>
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[200px] pointer-events-none" style={{ background: 'radial-gradient(ellipse,rgba(79,195,247,.04),transparent 70%)' }} />
-      <div className="w-full h-px" style={{ background: 'linear-gradient(to right,transparent,rgba(255,255,255,.08),transparent)' }} />
+  const linkStyle = (clickable) => ({
+    fontSize: 13.5, color: 'rgba(255,255,255,.4)', background: 'none', border: 'none',
+    padding: 0, textAlign: 'left', fontFamily: 'Inter,sans-serif', textDecoration: 'none',
+    cursor: clickable ? 'pointer' : 'default', transition: clickable ? 'color .2s' : 'none',
+  })
 
-      <div className="max-w-5xl mx-auto px-8 pt-16 pb-9">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', fontFamily: 'Syne,sans-serif' }}>R</span>
-              <span className="text-white text-sm font-bold tracking-widest" style={{ fontFamily: 'Syne,sans-serif' }}>RUPANA</span>
+  return (
+    <footer style={{ background: '#030508', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 800, height: 200, background: 'radial-gradient(ellipse,rgba(79,195,247,.04),transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ width: '100%', height: 1, background: 'linear-gradient(to right,transparent,rgba(255,255,255,.08),transparent)' }} />
+
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '56px 32px 32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
+
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <span style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 13, color: '#fff', flexShrink: 0 }}>R</span>
+              <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, letterSpacing: '2px', color: '#fff' }}>RUPANA</span>
             </div>
-            <p className="text-white/35 text-[13px] leading-relaxed mb-5">Design-led digital agency building products that move people.</p>
-            <div className="flex gap-2">
-              {[
-                'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z',
-              ].map((d, i) => (
-                <a key={i} href="#" className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 transition-all hover:text-white hover:bg-white/10" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,.08)' }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d={d}/></svg>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,.35)', lineHeight: 1.65, maxWidth: 260, marginBottom: 18 }}>Design-led digital agency building products that move people.</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['𝕏', 'in', 'ig'].map(s => (
+                <a key={s} href="#" style={{ width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)', color: 'rgba(255,255,255,.4)', fontSize: 12, fontWeight: 700, textDecoration: 'none', transition: 'all .2s', fontFamily: 'Inter,sans-serif' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,.1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,.4)'; e.currentTarget.style.background = 'rgba(255,255,255,.05)' }}>
+                  {s}
                 </a>
               ))}
             </div>
           </div>
 
-          {[
-            { title: 'Navigate', links: [['Home', scrollTop],['Projects', onProjects],['Marketplace', onMarketplace],['About', onAbout]] },
-            { title: 'Services', links: [['Web Design'],['Branding'],['E-commerce'],['Marketing']] },
-            { title: 'Contact', links: [['hello@rupana.studio'],['Instagram'],['Twitter']] },
-          ].map(({ title, links }) => (
-            <div key={title}>
-              <p className="text-white text-[11px] font-bold tracking-[2px] uppercase mb-5">{title}</p>
-              <div className="flex flex-col gap-3">
-                {links.map(([label, fn]) => (
-                  <button key={label} onClick={fn} className={`text-[13.5px] text-white/40 text-left bg-transparent border-none p-0 ${fn ? 'cursor-pointer hover:text-white transition-colors' : 'cursor-default'}`}>{label}</button>
-                ))}
-              </div>
+          {/* Navigate */}
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#fff', marginBottom: 20 }}>Navigate</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[['Home', scrollTop], ['Projects', onProjects], ['Marketplace', onMarketplace], ['About', onAbout]].map(([lbl, fn]) => (
+                <button key={lbl} onClick={fn} style={linkStyle(true)}
+                  onMouseEnter={e => e.target.style.color = '#fff'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,.4)'}>{lbl}</button>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Services */}
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#fff', marginBottom: 20 }}>Services</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {['Web Design', 'Branding', 'E-commerce', 'Marketing'].map(s => (
+                <span key={s} style={linkStyle(false)}>{s}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#fff', marginBottom: 20 }}>Contact</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {['hello@rupana.studio', 'Instagram', 'Twitter'].map(s => (
+                <a key={s} href="#" style={linkStyle(true)}
+                  onMouseEnter={e => e.target.style.color = '#fff'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,.4)'}>{s}</a>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <span className="text-[12.5px] text-white/30">© 2025 Rupana. All rights reserved.</span>
-          <button onClick={scrollTop} className="text-[12.5px] text-white/30 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
-            Back to top
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        {/* Bottom */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,.06)' }}>
+          <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,.3)' }}>© 2025 Rupana. All rights reserved.</span>
+          <button onClick={scrollTop} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,.3)', fontSize: 12.5, fontFamily: 'Inter,sans-serif', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .2s' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.3)'}>
+            Back to top ↑
           </button>
         </div>
       </div>

@@ -8,22 +8,51 @@ export default function Navbar({ onProjects, onMarketplace, onAbout }) {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const navStyle = {
+    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+    display: 'flex', justifyContent: 'center',
+    padding: scrolled ? '12px 24px' : '20px 24px',
+    transition: 'padding .3s',
+  }
+
+  const capsuleStyle = {
+    display: 'flex', alignItems: 'center', gap: 0,
+    background: 'rgba(255,255,255,0.07)',
+    backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255,255,255,0.14)',
+    borderRadius: 100, padding: '7px 7px 7px 14px',
+    boxShadow: '0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08)',
+  }
+
+  const logoBtn = {
+    display: 'flex', alignItems: 'center', gap: 8,
+    background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 50,
+  }
+
+  const logoIcon = {
+    width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)',
+    fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 13, color: '#fff', flexShrink: 0,
+  }
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all ${scrolled ? 'pt-3' : 'pt-5'} px-6`}>
-      <div
-        className="flex items-center rounded-full px-2 py-2 gap-1"
-        style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.14)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}
-      >
-        <button onClick={scrollTop} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none">
-          <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', fontFamily: 'Syne,sans-serif' }}>R</span>
-          <span className="text-white text-sm font-bold tracking-widest" style={{ fontFamily: 'Syne,sans-serif', letterSpacing: '2px' }}>RUPANA</span>
+    <nav style={navStyle}>
+      <div style={capsuleStyle}>
+        <button style={logoBtn} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <span style={logoIcon}>R</span>
+          <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, letterSpacing: '2px', color: '#fff' }}>RUPANA</span>
         </button>
-        <div className="w-px h-5 mx-2 bg-white/15" />
-        <div className="flex items-center gap-0.5">
+        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,.15)', margin: '0 10px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {[['Projects', onProjects], ['Marketplace', onMarketplace], ['About', onAbout]].map(([label, fn]) => (
-            <button key={label} onClick={fn} className="px-4 py-1.5 rounded-full text-white/65 text-sm font-medium hover:text-white hover:bg-white/10 transition-all cursor-pointer bg-transparent border-none whitespace-nowrap">
+            <button key={label} onClick={fn} style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '7px 16px', borderRadius: 50,
+              color: 'rgba(255,255,255,.65)', fontFamily: 'Inter,sans-serif', fontSize: 13.5, fontWeight: 500,
+              transition: 'all .2s', whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => { e.target.style.color = '#fff'; e.target.style.background = 'rgba(255,255,255,.1)' }}
+            onMouseLeave={e => { e.target.style.color = 'rgba(255,255,255,.65)'; e.target.style.background = 'none' }}>
               {label}
             </button>
           ))}

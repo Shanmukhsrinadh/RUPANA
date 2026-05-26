@@ -1,15 +1,8 @@
 import { useState, useEffect, forwardRef } from 'react'
+import works from '../data/works.json'
 
-const PROJECTS = [
-  { id:1, title:'Lumora Finance', cat:'Web App', tags:['UI/UX','Dev'], desc:'Fintech dashboard with real-time analytics and portfolio tracking for modern investors.', bg:'linear-gradient(135deg,#0f2027,#203a43,#2c5364)', accent:'#4fc3f7', year:'2024' },
-  { id:2, title:'Verdant Studio', cat:'Branding', tags:['Identity','Design'], desc:'Full visual identity for a sustainable architecture firm — logo, type, and brand guidelines.', bg:'linear-gradient(135deg,#0d1b0e,#1a3a1e,#2d6a35)', accent:'#86efac', year:'2024' },
-  { id:3, title:'Orbis Events', cat:'Landing Page', tags:['Motion','Dev'], desc:'Immersive event page with scroll animations and real-time ticket availability.', bg:'linear-gradient(135deg,#1a0533,#3b0764,#6d28d9)', accent:'#c4b5fd', year:'2025' },
-]
-const MARKETPLACE = [
-  { id:4, title:'Nova SaaS Kit', cat:'Template', tags:['React','Tailwind'], desc:'Complete SaaS starter with auth, dashboard, billing UI, and onboarding flows.', bg:'linear-gradient(135deg,#0c1445,#1e3a8a,#2563eb)', accent:'#93c5fd', price:'$49', year:'2025' },
-  { id:5, title:'Folio Dark', cat:'Portfolio', tags:['Minimal','Animated'], desc:'Sleek dark-mode portfolio for designers with smooth page transitions.', bg:'linear-gradient(135deg,#0f0f0f,#1c1c2e,#2d2d44)', accent:'#f0abfc', price:'$29', year:'2025' },
-  { id:6, title:'Market Pro', cat:'E-commerce', tags:['Shopify','CRO'], desc:'High-converting e-commerce theme with carousels, quick-add, and mobile-first design.', bg:'linear-gradient(135deg,#1c0a0a,#3d1515,#7c2d2d)', accent:'#fca5a5', price:'$79', year:'2025' },
-]
+const PROJECTS    = works.filter(w => w.category === 'projects')
+const MARKETPLACE = works.filter(w => w.category === 'marketplace')
 
 const Projects = forwardRef(function Projects(_, ref) {
   const [tab, setTab] = useState('projects')

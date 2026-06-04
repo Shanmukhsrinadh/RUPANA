@@ -169,7 +169,6 @@ export default function Hero() {
 
         overflow: 'hidden',
 
-        // Fallback colors updated to deeper blues to support smooth video loading transitions
         background: `
           radial-gradient(
             ellipse at 20% 50%,
@@ -214,7 +213,6 @@ export default function Hero() {
           position: 'absolute',
           inset: 0,
 
-          // Smooth ambient atmosphere utilizing deep-water tones instead of black tones
           background:
             'linear-gradient(to bottom, rgba(14,35,67,0.1) 0%, rgba(14,35,67,0.15) 50%, rgba(14,35,67,0.4) 100%)',
         }}
@@ -769,7 +767,7 @@ export default function Hero() {
         </style>
       </div>
 
-      {/* SEAMLESS TRANSITION FADE — tall enough to fully bury the video */}
+      {/* SEAMLESS TRANSITION FADE — updated color palette to #0E1E37 */}
       <div
         style={{
           position: 'absolute',
@@ -781,13 +779,13 @@ export default function Hero() {
           background: `
             linear-gradient(
               to bottom,
-              rgba(8, 17, 30, 0)    0%,
-              rgba(8, 17, 30, 0.08) 18%,
-              rgba(8, 17, 30, 0.28) 36%,
-              rgba(8, 17, 30, 0.58) 52%,
-              rgba(8, 17, 30, 0.82) 65%,
-              #08111e               78%,
-              #08111e               100%
+              rgba(14, 30, 55, 0)    0%,
+              rgba(14, 30, 55, 0.08) 18%,
+              rgba(14, 30, 55, 0.28) 36%,
+              rgba(14, 30, 55, 0.58) 52%,
+              rgba(14, 30, 55, 0.82) 65%,
+              #0e1e37               78%,
+              #0e1e37               100%
             )
           `,
           zIndex: 1,

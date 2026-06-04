@@ -75,13 +75,7 @@ const Projects = forwardRef(function Projects(_, ref) {
 
   const s = {
     section: {
-      background: `
-        radial-gradient(ellipse at 12% 0%,  rgba(14,165,233,0.22) 0%, transparent 50%),
-        radial-gradient(ellipse at 88% 20%, rgba(99,102,241,0.18) 0%, transparent 48%),
-        radial-gradient(ellipse at 50% 60%, rgba(56,189,248,0.08) 0%, transparent 55%),
-        radial-gradient(ellipse at 5% 90%,  rgba(79,195,247,0.10) 0%, transparent 40%),
-        linear-gradient(180deg, #08111e 0%, #0a1628 40%, #060c16 100%)
-      `,
+      background: 'linear-gradient(to bottom, #0E1E37 0%, #050A14 100%)', 
       padding: 'clamp(60px, 8vw, 112px) 0 clamp(50px, 6vw, 96px)',
       marginTop: '-2px',
       position: 'relative',
@@ -93,6 +87,8 @@ const Projects = forwardRef(function Projects(_, ref) {
     inner: {
       width: '100%',
       padding: '0 clamp(16px, 5vw, 80px)',
+      position: 'relative',
+      zIndex: 2,
     },
 
     // Header Container Style
@@ -247,7 +243,7 @@ const Projects = forwardRef(function Projects(_, ref) {
     },
     priceTag: {
       position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', left: 'clamp(10px, 1.2vw, 16px)', zIndex: 3,
-      padding: '5px clamp(10px, 0.9vw, 16px)', borderRadius: 50, 
+      padding: '5px clamp(10px, 0.9vw, 16px)', borderRadius: 999, 
       fontFamily: "'Poppins', sans-serif",
       fontSize: 'clamp(11px, 0.9vw, 13px)', fontWeight: 700,
       color: '#fff', background: 'rgba(10, 20, 36, 0.6)',
@@ -409,17 +405,33 @@ const Projects = forwardRef(function Projects(_, ref) {
               position: 'absolute', inset: 0,
               background: `radial-gradient(circle at top right, ${item.accent}15, transparent 60%)`,
               pointerEvents: 'none',
+              zIndex: 1,
             }} />
 
             <div style={{ ...s.cardVisual, background: item.bg }}>
+              {item.image && (
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                  }}
+                />
+              )}
+
               <div style={{
                 position: 'absolute', width: '45%', aspectRatio: '1/1', borderRadius: '50%',
                 background: item.accent, filter: 'blur(50px)', opacity: 0.12, bottom: '-20%', right: '-10%',
+                zIndex: 1,
               }} />
 
               <span style={{
                 position: 'absolute', top: '14px', left: '16px', fontFamily: "'Poppins', sans-serif",
-                fontSize: 'clamp(10px, 0.8vw, 12px)', fontWeight: 600, letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.2)',
+                fontSize: 'clamp(10px, 0.8vw, 12px)', fontWeight: 600, letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.4)',
+                zIndex: 2,
               }}>
                 0{i + 1}
               </span>
@@ -430,6 +442,7 @@ const Projects = forwardRef(function Projects(_, ref) {
                   fontFamily: "'Poppins', sans-serif",
                   fontSize: 'clamp(10px, 0.7vw, 12px)', fontWeight: 600, color: '#fff',
                   background: 'rgba(10, 20, 36, 0.5)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(4px)',
+                  zIndex: 2,
                 }}>
                   {item.price}
                 </span>
@@ -543,6 +556,86 @@ const Projects = forwardRef(function Projects(_, ref) {
       </div>
 
       <style>{`
+        /* --- Deep Ocean High-Visibility Rays (Falling Top-Right to Bottom-Left) --- */
+
+        /* Ray 1: Full-depth primary sun ray beam */
+        #projects::before {
+          content: '';
+          position: absolute;
+          top: -25%;
+          right: -25%;
+          width: 150%;
+          height: 150%;
+          /* 225deg flows perfectly from Top-Right down to Bottom-Left */
+          background: linear-gradient(225deg, 
+            transparent 42%, 
+            rgba(56, 189, 248, 0.22) 48%, 
+            rgba(255, 255, 255, 0.45) 50%, 
+            rgba(56, 189, 248, 0.22) 52%, 
+            transparent 58%
+          );
+          filter: blur(24px);
+          mix-blend-mode: screen; /* Ignites the beam on top of dark ocean hues */
+
+          /* Smoothly dissolves ray right towards the container base */
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0) 95%);
+          -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0) 95%);
+
+          pointer-events: none;
+          z-index: 1;
+          animation: oceanRayFallOne 14s ease-in-out infinite alternate;
+        }
+
+        /* Ray 2: Offset shorter secondary ray (approx 75% depth footprint) */
+        #projects::after {
+          content: '';
+          position: absolute;
+          top: -20%;
+          right: -5%;
+          width: 110%;
+          height: 110%; /* Closer bounding limits to mirror the 75% size request */
+          background: linear-gradient(225deg, 
+            transparent 44%, 
+            rgba(99, 102, 241, 0.2) 48%, 
+            rgba(255, 255, 255, 0.35) 50%, 
+            rgba(56, 189, 248, 0.25) 52%, 
+            transparent 56%
+          );
+          filter: blur(28px);
+          mix-blend-mode: screen;
+
+          /* Masks out early to complete the 75% length restriction */
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 75%);
+          -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 75%);
+
+          pointer-events: none;
+          z-index: 1;
+          animation: oceanRayFallTwo 10s ease-in-out infinite alternate;
+        }
+
+        /* Diagonal To-and-Fro Falling Animations (X and Y shifting symmetrically) */
+        @keyframes oceanRayFallOne {
+          0% { 
+            transform: translate(40px, -40px) rotate(0deg); 
+            opacity: 0.6;
+          }
+          100% { 
+            transform: translate(-40px, 40px) rotate(2.5deg); 
+            opacity: 1;
+          }
+        }
+
+        @keyframes oceanRayFallTwo {
+          0% { 
+            transform: translate(-30px, 30px) rotate(-1deg); 
+            opacity: 0.5;
+          }
+          100% { 
+            transform: translate(30px, -30px) rotate(1.5deg); 
+            opacity: 0.9;
+          }
+        }
+
         .card-heading {
           font-family: 'Poppins', sans-serif;
           font-size: clamp(16px, 2vw, 22px) !important;

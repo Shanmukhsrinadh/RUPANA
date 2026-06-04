@@ -4,9 +4,6 @@ import works from '../data/works.json';
 const PROJECTS = works.filter(w => w.category === 'projects');
 const MARKETPLACE = works.filter(w => w.category === 'marketplace');
 
-// Helper to filter out webdevelopment tags case-insensitively
-const filterWebDev = (text) => !/web\s*development/i.test(text || '');
-
 const Projects = forwardRef(function Projects(_, ref) {
   const [tab, setTab] = useState('projects');
   const [fading, setFading] = useState(false);
@@ -75,7 +72,7 @@ const Projects = forwardRef(function Projects(_, ref) {
 
   const s = {
     section: {
-      background: 'linear-gradient(180deg, #0e1e37 0%, #091424 40%, #060c16 100%)',
+      background: 'linear-gradient(180deg, #08111e 0%, #0a1628 35%, #080e1c 100%)',
       backgroundImage: `
         radial-gradient(ellipse at 12% 0%,   rgba(14, 165, 233, 0.22) 0%, transparent 50%),
         radial-gradient(ellipse at 88% 20%,  rgba(99, 102, 241, 0.18) 0%, transparent 48%),
@@ -95,24 +92,16 @@ const Projects = forwardRef(function Projects(_, ref) {
       padding: '0 clamp(16px, 5vw, 80px)',
     },
 
-    // Header Container Style
-    headerRow: isMobileView ? {
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'flex-start',
-      marginBottom: 'clamp(32px, 5vw, 56px)',
-    } : {
-      display: 'grid',
-      gridTemplateColumns: '1fr auto',
-      gap: '0 clamp(16px, 3vw, 32px)',
-      marginBottom: 'clamp(32px, 5vw, 56px)',
+    // Header section (STAYS AS SYNE)
+    headerRow: {
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+      gap: 'clamp(16px, 3vw, 32px)', marginBottom: 'clamp(32px, 5vw, 56px)', flexWrap: 'wrap',
     },
+    headerLeft: { flex: '1 1 280px', maxWidth: '100%' },
     label: {
       fontFamily: "'Syne', sans-serif",
       color: '#38bdf8', fontSize: 'clamp(10px, 0.8vw, 12px)', letterSpacing: '3px',
-      textTransform: 'uppercase', fontWeight: 600, 
-      marginBottom: isMobileView ? 10 : 0,
-      ...(isMobileView ? { order: 1 } : { gridColumn: '1 / 2', gridRow: '1', alignSelf: 'end' }),
+      textTransform: 'uppercase', fontWeight: 600, marginBottom: 10,
     },
     heading: {
       fontFamily: "'Syne', sans-serif",
@@ -121,20 +110,17 @@ const Projects = forwardRef(function Projects(_, ref) {
       fontSize: 'clamp(26px, 3.5vw, 52px)',
       lineHeight: 1.1,
       letterSpacing: '-1px',
-      marginBottom: isMobileView ? 12 : 0,
-      ...(isMobileView ? { order: 2 } : { gridColumn: '1 / 2', gridRow: '2', alignSelf: 'center' }),
+      marginBottom: 12,
     },
     sub: { 
       fontFamily: "'Poppins', sans-serif",
       fontSize: 'clamp(13px, 1.1vw, 15px)', 
       color: 'rgba(255, 255, 255, 0.55)', 
       lineHeight: 1.6, 
-      maxWidth: 440,
-      marginTop: isMobileView ? 0 : 12,
-      ...(isMobileView ? { order: 3 } : { gridColumn: '1 / 2', gridRow: '3', alignSelf: 'start' }),
+      maxWidth: 440 
     },
 
-    // Toggle Tab Container
+    // Toggle Tab Container (Matches the suggestion pill frosted glass styling)
     toggleWrap: {
       position: 'relative',
       display: 'flex',
@@ -148,8 +134,6 @@ const Projects = forwardRef(function Projects(_, ref) {
       overflow: 'hidden',
       width: 'clamp(240px, 22vw, 300px)',
       boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-      marginTop: isMobileView ? 20 : 0,
-      ...(isMobileView ? { order: 4 } : { gridColumn: '2', gridRow: '2', alignSelf: 'center' }),
     },
     toggleBtn: (active) => ({
       position: 'relative',
@@ -217,12 +201,17 @@ const Projects = forwardRef(function Projects(_, ref) {
       transition: 'all .4s ease',
     },
     previewGlow: {
-      position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
+      position: 'absolute', inset: 0,
       background: `radial-gradient(circle at 60% 80%, ${preview.accent}44, transparent 65%)`,
       transition: 'background .4s',
     },
+    previewImage: {
+      position: 'absolute', inset: 0, width: '100%', height: '100%',
+      objectFit: 'cover', objectPosition: 'top',
+      transition: 'opacity .4s, transform .4s',
+    },
     previewOverlay: {
-      position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 3,
+      position: 'absolute', bottom: 0, left: 0, right: 0,
       background: 'linear-gradient(to top, rgba(10, 20, 36, 0.95), rgba(10, 20, 36, 0.4) 60%, transparent)',
       padding: 'clamp(16px, 2vw, 28px) clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px)',
     },
@@ -238,7 +227,7 @@ const Projects = forwardRef(function Projects(_, ref) {
       border: '1px solid rgba(255, 255, 255, 0.12)',
     },
     visitBtn: {
-      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', right: 'clamp(10px, 1.2vw, 16px)', zIndex: 3,
+      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', right: 'clamp(10px, 1.2vw, 16px)',
       padding: '5px clamp(12px, 1vw, 18px)', borderRadius: 50, cursor: 'pointer',
       backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', color: '#fff', 
       fontSize: 'clamp(11px, 0.8vw, 13px)', fontWeight: 600, fontFamily: "'Poppins', sans-serif",
@@ -246,7 +235,7 @@ const Projects = forwardRef(function Projects(_, ref) {
       transition: 'all .2s', display: 'flex', alignItems: 'center', gap: 6,
     },
     priceTag: {
-      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', left: 'clamp(10px, 1.2vw, 16px)', zIndex: 3,
+      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', left: 'clamp(10px, 1.2vw, 16px)',
       padding: '5px clamp(10px, 0.9vw, 16px)', borderRadius: 50, 
       fontFamily: "'Poppins', sans-serif",
       fontSize: 'clamp(11px, 0.9vw, 13px)', fontWeight: 700,
@@ -320,7 +309,7 @@ const Projects = forwardRef(function Projects(_, ref) {
             >
               <span style={s.listTitle(active)}>{item.title}</span>
               <div style={s.listMeta(active)}>
-                {filterWebDev(item.type) && <span style={s.listType}>{item.type}</span>}
+                <span style={s.listType}>{item.type}</span>
                 <span style={s.listArrow}>↗</span>
               </div>
             </div>
@@ -331,34 +320,14 @@ const Projects = forwardRef(function Projects(_, ref) {
       <div className="projects-preview" style={s.previewWrap}>
         <div style={s.previewCard}>
           <div style={s.previewGlow} />
-
-          {/* Vertical Reel-style Image Slider Track */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            height: '100%',
-            transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-            transform: `translateY(-${hovered * 100}%)`,
-          }}>
-            {allItems.map((item) => (
-              <div key={item.id} style={{ width: '100%', height: '100%', flexShrink: 0, position: 'relative', background: item.bg }}>
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      objectPosition: 'top',
-                    }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
+          {preview.image && (
+            <img
+              key={preview.id}
+              src={preview.image}
+              alt={preview.title}
+              style={s.previewImage}
+            />
+          )}
           {preview.price && <span style={s.priceTag}>{preview.price}</span>}
           {preview.link && (
             <a href={preview.link} target="_blank" rel="noopener noreferrer" style={s.visitBtn}>
@@ -368,9 +337,7 @@ const Projects = forwardRef(function Projects(_, ref) {
           <div style={s.previewOverlay}>
             <p style={s.previewTitle}>{preview.title}</p>
             <div style={s.previewMeta}>
-              {preview.tags?.filter(filterWebDev).map(t => (
-                <span key={t} style={s.previewTag}>{t}</span>
-              ))}
+              {preview.tags?.map(t => <span key={t} style={s.previewTag}>{t}</span>)}
             </div>
           </div>
         </div>
@@ -409,36 +376,17 @@ const Projects = forwardRef(function Projects(_, ref) {
               position: 'absolute', inset: 0,
               background: `radial-gradient(circle at top right, ${item.accent}15, transparent 60%)`,
               pointerEvents: 'none',
-              zIndex: 1,
             }} />
 
             <div style={{ ...s.cardVisual, background: item.bg }}>
-              {/* Added Project Image Element for Mobile Grid view */}
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    objectPosition: 'top',
-                    position: 'absolute',
-                    inset: 0,
-                  }}
-                />
-              )}
-
               <div style={{
                 position: 'absolute', width: '45%', aspectRatio: '1/1', borderRadius: '50%',
                 background: item.accent, filter: 'blur(50px)', opacity: 0.12, bottom: '-20%', right: '-10%',
-                zIndex: 1,
               }} />
 
               <span style={{
                 position: 'absolute', top: '14px', left: '16px', fontFamily: "'Poppins', sans-serif",
-                fontSize: 'clamp(10px, 0.8vw, 12px)', fontWeight: 600, letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.7)',
-                zIndex: 2,
+                fontSize: 'clamp(10px, 0.8vw, 12px)', fontWeight: 600, letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.2)',
               }}>
                 0{i + 1}
               </span>
@@ -449,7 +397,6 @@ const Projects = forwardRef(function Projects(_, ref) {
                   fontFamily: "'Poppins', sans-serif",
                   fontSize: 'clamp(10px, 0.7vw, 12px)', fontWeight: 600, color: '#fff',
                   background: 'rgba(10, 20, 36, 0.5)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(4px)',
-                  zIndex: 2,
                 }}>
                   {item.price}
                 </span>
@@ -458,11 +405,9 @@ const Projects = forwardRef(function Projects(_, ref) {
 
             <div style={s.cardBody}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
-                {filterWebDev(item.cat || item.type) && (
-                  <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(9px, 0.7vw, 11px)', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: item.accent }}>
-                    {item.cat || item.type}
-                  </span>
-                )}
+                <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(9px, 0.7vw, 11px)', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: item.accent }}>
+                  {item.cat || item.type}
+                </span>
                 <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(9px, 0.7vw, 11px)', color: 'rgba(255, 255, 255, 0.35)' }}>
                   {item.year}
                 </span>
@@ -477,7 +422,7 @@ const Projects = forwardRef(function Projects(_, ref) {
               </p>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {item.tags?.filter(filterWebDev).map(t => (
+                {item.tags?.map(t => (
                   <span
                     key={t}
                     style={{
@@ -518,12 +463,17 @@ const Projects = forwardRef(function Projects(_, ref) {
 
         {/* HEADER */}
         <div className="projects-header" style={s.headerRow}>
-          <p style={s.label}>Our portfolio</p>
-
-          <h2 style={s.heading}>
-            {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
-          </h2>
-
+          <div style={s.headerLeft}>
+            <p style={s.label}>Our portfolio</p>
+            <h2 style={s.heading}>
+              {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
+            </h2>
+            <p style={s.sub}>
+              {tab === 'projects'
+                ? 'Crafted experiences built for modern brands and immersive digital products.'
+                : 'Premium templates and assets designed for faster launches.'}
+            </p>
+          </div>
           <div className="projects-toggle" style={s.toggleWrap}>
             <div
               style={{
@@ -549,12 +499,6 @@ const Projects = forwardRef(function Projects(_, ref) {
               </button>
             ))}
           </div>
-
-          <p style={s.sub}>
-            {tab === 'projects'
-              ? 'Crafted experiences built for modern brands and immersive digital products.'
-              : 'Premium templates and assets designed for faster launches.'}
-          </p>
         </div>
 
         {/* BODY */}
@@ -563,6 +507,7 @@ const Projects = forwardRef(function Projects(_, ref) {
       </div>
 
       <style>{`
+        /* Fluid Typography & Layout Adjustments via global classes */
         .card-heading {
           font-family: 'Poppins', sans-serif;
           font-size: clamp(16px, 2vw, 22px) !important;

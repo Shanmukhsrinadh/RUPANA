@@ -169,6 +169,7 @@ export default function Hero() {
 
         overflow: 'hidden',
 
+        // Fallback colors updated to deeper blues to support smooth video loading transitions
         background: `
           radial-gradient(
             ellipse at 20% 50%,
@@ -185,7 +186,7 @@ export default function Hero() {
             #0a2a1f,
             transparent 45%
           ),
-          #050810
+          #0e2343
         `,
       }}
     >
@@ -213,8 +214,9 @@ export default function Hero() {
           position: 'absolute',
           inset: 0,
 
+          // Smooth ambient atmosphere utilizing deep-water tones instead of black tones
           background:
-            'linear-gradient(to bottom,rgba(5,8,16,.12),rgba(5,8,16,.06) 40%,rgba(5,8,16,.55))',
+            'linear-gradient(to bottom, rgba(14,35,67,0.1) 0%, rgba(14,35,67,0.15) 50%, rgba(14,35,67,0.4) 100%)',
         }}
       />
 
@@ -767,30 +769,29 @@ export default function Hero() {
         </style>
       </div>
 
-      {/* BOTTOM FADE */}
+      {/* SEAMLESS TRANSITION FADE (Blends into #0e2343) */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           bottom: 0,
-
-          height: '240px',
-
+          height: '280px', // Elevated height guarantees soft color diffusion
           pointerEvents: 'none',
 
+          // This non-linear gradient smoothly eases out the video and eases in the projects background palette
           background: `
             linear-gradient(
               to bottom,
-              rgba(5,8,16,0) 0%,
-              rgba(5,8,16,.08) 18%,
-              rgba(5,8,16,.18) 38%,
-              rgba(5,8,16,.35) 58%,
-              rgba(5,8,16,.62) 82%,
-              #050810 100%
+              rgba(8, 17, 30, 0) 0%,
+              rgba(8, 17, 30, 0.03) 15%,
+              rgba(8, 17, 30, 0.12) 32%,
+              rgba(8, 17, 30, 0.30) 50%,
+              rgba(8, 17, 30, 0.60) 68%,
+              rgba(8, 17, 30, 0.88) 85%,
+              #08111e 100%
             )
           `,
-
           zIndex: 1,
         }}
       />

@@ -80,6 +80,7 @@ const Projects = forwardRef(function Projects(_, ref) {
         radial-gradient(ellipse at 5%  90%,  rgba(79, 195, 247, 0.10) 0%, transparent 40%)
       `,
       padding: 'clamp(60px, 8vw, 112px) 0 clamp(50px, 6vw, 96px)',
+      marginTop: '-2px',
       position: 'relative',
       overflow: 'hidden',
     },

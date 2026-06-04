@@ -8,7 +8,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; background: #050810; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body { font-family: 'Inter', sans-serif; background: #08111e; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 #root { width: 100%; }
 ::selection { background: rgba(79,195,247,0.3); color: #fff; }
 ::-webkit-scrollbar { width: 5px; }

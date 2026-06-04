@@ -769,27 +769,25 @@ export default function Hero() {
         </style>
       </div>
 
-      {/* SEAMLESS TRANSITION FADE (Blends into #0e2343) */}
+      {/* SEAMLESS TRANSITION FADE — tall enough to fully bury the video */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           bottom: 0,
-          height: '280px', // Elevated height guarantees soft color diffusion
+          height: '55vh',
           pointerEvents: 'none',
-
-          // This non-linear gradient smoothly eases out the video and eases in the projects background palette
           background: `
             linear-gradient(
               to bottom,
-              rgba(8, 17, 30, 0) 0%,
-              rgba(8, 17, 30, 0.03) 15%,
-              rgba(8, 17, 30, 0.12) 32%,
-              rgba(8, 17, 30, 0.30) 50%,
-              rgba(8, 17, 30, 0.60) 68%,
-              rgba(8, 17, 30, 0.88) 85%,
-              #08111e 100%
+              rgba(8, 17, 30, 0)    0%,
+              rgba(8, 17, 30, 0.08) 18%,
+              rgba(8, 17, 30, 0.28) 36%,
+              rgba(8, 17, 30, 0.58) 52%,
+              rgba(8, 17, 30, 0.82) 65%,
+              #08111e               78%,
+              #08111e               100%
             )
           `,
           zIndex: 1,

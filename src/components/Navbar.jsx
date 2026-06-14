@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 export default function Navbar({
   onProjects,
   onMarketplace,
+  onServices,
   onAbout,
 }) {
   const [scrolled, setScrolled] = useState(false)
@@ -500,7 +501,7 @@ export default function Navbar({
               {[
                 ['Projects', onProjects],
                 ['Marketplace', onMarketplace],
-                ['Pricing', null],
+                ['Services', onServices],
                 ['About', onAbout],
               ].map(([label, fn]) => (
                 <button
@@ -644,7 +645,7 @@ export default function Navbar({
             {[
               ['Projects', onProjects],
               ['Marketplace', onMarketplace],
-              ['Pricing', null],
+              ['Services', onServices],
               ['About', onAbout],
             ].map(([label, fn]) => (
               <button

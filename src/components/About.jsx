@@ -90,11 +90,18 @@ export default function AboutSection() {
   ];
 
   return (
-    <section ref={sectionRef} className="relative h-[350vh] bg-[#050810]">
+    <section ref={sectionRef} className="relative h-[350vh]" style={{ background: '#08111e' }}>
       {/* Sticky Scene */}
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" style={{
+          background: [
+            'radial-gradient(ellipse 80% 60% at 85% 20%, rgba(99,102,241,0.10) 0%, transparent 60%)',
+            'radial-gradient(ellipse 70% 50% at 10% 80%, rgba(56,189,248,0.08) 0%, transparent 60%)',
+            'radial-gradient(ellipse 100% 80% at 50% 50%, rgba(14,30,55,0.6) 0%, transparent 100%)',
+            'linear-gradient(to bottom, #08111e 0%, #08111e 100%)',
+          ].join(', '),
+        }}>
           {/* Ambient Glows */}
           <div className="absolute -top-52 right-0 h-[700px] w-[700px] rounded-full bg-violet-500/10 blur-[180px]" />
 

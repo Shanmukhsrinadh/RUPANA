@@ -1,74 +1,233 @@
-import { forwardRef } from 'react'
+import { useRef, useMemo } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
-const STATS = [['40+','Projects Delivered'],['98%','Client Satisfaction'],['3+','Years Building'],['12+','Industries Served']]
-const VALUES = [
-  { icon: '★', title: 'Craft First', desc: 'Every pixel, every interaction — designed with intention and obsessive attention to detail.' },
-  { icon: '⏱', title: 'Speed Matters', desc: 'We move fast without breaking things. Tight timelines, zero compromise on quality.' },
-  { icon: '⬡', title: 'Partner, Not Vendor', desc: "We embed ourselves in your vision. Your success is the metric we measure ourselves by." },
-]
+function GlitterBackground() {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 25 }, (_, i) => ({
+        id: i,
+        size: Math.random() * 3 + 1,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        opacity: Math.random() * 0.25 + 0.05,
+        duration: 8 + Math.random() * 10,
+        delay: Math.random() * 5,
+      })),
+    [],
+  );
 
-const About = forwardRef(function About(_, ref) {
   return (
-    <section ref={ref} id="about" style={{ background: '#050810', padding: '112px 0 96px', position: 'relative', overflow: 'hidden' }}>
-      {/* Decorations */}
-      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 600, height: 1, background: 'linear-gradient(to right,transparent,rgba(167,139,250,.3),transparent)' }} />
-      <div style={{ position: 'absolute', top: -200, right: -200, width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle,rgba(167,139,250,.06),transparent 70%)', pointerEvents: 'none' }} />
+    <div className="absolute inset-0 overflow-hidden">
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full bg-white"
+          style={{
+            width: particle.size,
+            height: particle.size,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            opacity: particle.opacity,
+            filter: "blur(0.5px)",
+          }}
+          animate={{
+            y: [-20, 20, -20],
+            x: [-10, 10, -10],
+            opacity: [
+              particle.opacity * 0.5,
+              particle.opacity,
+              particle.opacity * 0.5,
+            ],
+            scale: [1, 1.4, 1],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: particle.delay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 32px' }}>
-        {/* Top grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', marginBottom: 80 }}>
-          <div>
-            <p style={{ color: '#a78bfa', fontSize: 11, letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>About Rupana</p>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(36px,5vw,58px)', fontWeight: 800, color: '#fff', lineHeight: 1.05, marginBottom: 20, letterSpacing: '-1px' }}>
-              We build digital<br />
-              <span style={{ background: 'linear-gradient(135deg,#a78bfa,#4fc3f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>experiences</span><br />
-              that last.
-            </h2>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,.6)', lineHeight: 1.75, maxWidth: 440, marginBottom: 40 }}>
-              Rupana is a design-led digital agency obsessed with building things that work beautifully. From brand identities to full-stack products, we turn ideas into reality.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              {STATS.map(([val, lbl]) => (
-                <div key={lbl} style={{ padding: '14px 18px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)', borderRadius: 12 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, marginBottom: 2, background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{val}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', fontWeight: 500 }}>{lbl}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+export default function AboutSection() {
+  const sectionRef = useRef(null);
 
-          {/* Orb */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ position: 'relative', width: 280, height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {[
-                { size: 180, cls: 'anim-spin-slow', color: 'rgba(79,195,247,.2)', dotColor: '#4fc3f7' },
-                { size: 240, cls: 'anim-spin-rev', color: 'rgba(167,139,250,.15)', dotColor: '#a78bfa' },
-                { size: 298, cls: 'anim-spin-slow2', color: 'rgba(79,195,247,.08)', dotColor: 'rgba(79,195,247,.5)' },
-              ].map(({ size, cls, color, dotColor }) => (
-                <div key={size} className={cls} style={{ position: 'absolute', width: size, height: size, borderRadius: '50%', border: `1px solid ${color}` }}>
-                  <div style={{ position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)', width: 6, height: 6, borderRadius: '50%', background: dotColor, boxShadow: `0 0 10px ${dotColor}` }} />
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 25,
+    mass: 0.4,
+  });
+
+  // Content Animation
+  const contentY = useTransform(progress, [0, 0.35], [0, -250]);
+
+  const contentOpacity = useTransform(progress, [0, 0.3], [1, 0]);
+
+  // Video Expansion
+  const videoWidth = useTransform(progress, [0.2, 0.8], ["42vw", "100vw"]);
+
+  const videoHeight = useTransform(progress, [0.2, 0.8], ["72vh", "100vh"]);
+
+  const videoRadius = useTransform(progress, [0.2, 0.8], [32, 0]);
+
+  const revealOpacity = useTransform(progress, [0.72, 0.95], [0, 1]);
+
+  const revealY = useTransform(progress, [0.72, 0.95], [100, 0]);
+
+  const stats = [
+    ["40+", "Projects Delivered"],
+    ["98%", "Client Satisfaction"],
+    ["3+", "Years Building"],
+    ["12+", "Industries Served"],
+  ];
+
+  return (
+    <section ref={sectionRef} className="relative h-[350vh] bg-[#050810]">
+      {/* Sticky Scene */}
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0">
+          {/* Ambient Glows */}
+          <div className="absolute -top-52 right-0 h-[700px] w-[700px] rounded-full bg-violet-500/10 blur-[180px]" />
+
+          <div className="absolute bottom-0 left-0 h-[700px] w-[700px] rounded-full bg-cyan-500/10 blur-[180px]" />
+
+          {/* Ultra Subtle Noise */}
+          <div
+            className="absolute inset-0 opacity-[0.015]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at center, white 0.5px, transparent 0.5px)",
+              backgroundSize: "8px 8px",
+            }}
+          />
+
+          {/* Floating Glitter */}
+          <GlitterBackground />
+
+          {/* Breathing Atmosphere */}
+          <motion.div
+            className="absolute inset-0"
+            animate={{
+              opacity: [0.02, 0.05, 0.02],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(255,255,255,0.25), transparent 70%)",
+            }}
+          />
+        </div>
+
+        {/* Left Content */}
+        <motion.div
+          style={{
+            y: contentY,
+            opacity: contentOpacity,
+          }}
+          className="absolute left-[8%] top-1/2 z-20 max-w-[620px] -translate-y-1/2"
+        >
+          <span className="text-xs font-semibold uppercase tracking-[4px] text-violet-400">
+            About Rupana
+          </span>
+
+          <h2 className="mt-6 text-[clamp(3rem,6vw,6rem)] font-black leading-[0.9] text-white">
+            We Build
+            <br />
+            Digital
+            <br />
+            <span className="bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent">
+              Experiences
+            </span>
+          </h2>
+
+          <p className="mt-8 max-w-xl text-lg leading-8 text-white/60">
+            We create world-class digital products, premium brands, immersive
+            websites and modern experiences designed to help ambitious companies
+            grow faster.
+          </p>
+
+          <div className="mt-12 grid grid-cols-2 gap-4">
+            {stats.map(([number, label]) => (
+              <div
+                key={label}
+                className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl transition-all duration-500 hover:border-violet-500/30 hover:bg-white/[0.05]"
+              >
+                <div className="bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-3xl font-black text-transparent">
+                  {number}
                 </div>
-              ))}
-              <div style={{ width: 96, height: 96, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, background: 'linear-gradient(135deg,rgba(79,195,247,.15),rgba(167,139,250,.15))', border: '1px solid rgba(255,255,255,.15)', backdropFilter: 'blur(10px)', boxShadow: '0 0 40px rgba(79,195,247,.15),0 0 80px rgba(167,139,250,.08)' }}>
-                <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 40, fontWeight: 800, background: 'linear-gradient(135deg,#4fc3f7,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>R</span>
+
+                <div className="mt-1 text-sm text-white/40">{label}</div>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Values */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
-          {VALUES.map((v, i) => (
-            <div key={v.title} style={{ padding: '26px 24px', background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.07)', borderRadius: 16, animation: `fade-up .5s ease ${i * 0.1}s both', transition: 'all .3s` }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#a78bfa', marginBottom: 14 }}>{v.icon}</div>
-              <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{v.title}</h3>
-              <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,.55)', lineHeight: 1.65 }}>{v.desc}</p>
-            </div>
-          ))}
-        </div>
+        {/* Video Container */}
+        <motion.div
+          style={{
+            width: videoWidth,
+            height: videoHeight,
+            borderRadius: videoRadius,
+          }}
+          className="absolute right-[5%] top-1/2 z-10 overflow-hidden -translate-y-1/2 shadow-[0_0_120px_rgba(0,0,0,.5)]"
+        >
+          <motion.video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full object-cover"
+            animate={{
+              scale: [1, 1.03, 1],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <source src="/videos/showreel.mp4" type="video/mp4" />
+          </motion.video>
+
+          {/* Video Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        </motion.div>
+
+        {/* Final Reveal Text */}
+        <motion.div
+          style={{
+            opacity: revealOpacity,
+            y: revealY,
+          }}
+          className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
+        >
+          <div className="text-center">
+            <h2 className="text-6xl font-black text-white md:text-8xl">
+              Crafted
+              <br />
+              For Impact
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">
+              Every project is designed to create memorable experiences that
+              drive results and leave a lasting impression.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
-  )
-})
-
-export default About
+  );
+}

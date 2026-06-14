@@ -562,8 +562,8 @@ const Projects = forwardRef(function Projects(_, ref) {
         #projects::before {
           content: '';
           position: absolute;
-          top: -25%;
-          right: -25%;
+          top: 10%;
+          right: 10%;
           width: 150%;
           height: 150%;
           /* 225deg flows perfectly from Top-Right down to Bottom-Left */
@@ -590,8 +590,8 @@ const Projects = forwardRef(function Projects(_, ref) {
         #projects::after {
           content: '';
           position: absolute;
-          top: -20%;
-          right: -5%;
+          top: 20%;
+          right: 5%;
           width: 110%;
           height: 110%; /* Closer bounding limits to mirror the 75% size request */
           background: linear-gradient(225deg, 
@@ -601,12 +601,12 @@ const Projects = forwardRef(function Projects(_, ref) {
             rgba(56, 189, 248, 0.25) 52%, 
             transparent 56%
           );
-          filter: blur(28px);
+          filter: blur(50px);
           mix-blend-mode: screen;
 
-          /* Masks out early to complete the 75% length restriction */
-          mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 75%);
-          -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 75%);
+          /* REVISED: Smoothly feathers out 360° across all edges to prevent clipping */
+          mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0) 75%);
+          -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0) 75%);
 
           pointer-events: none;
           z-index: 1;

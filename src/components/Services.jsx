@@ -1,94 +1,55 @@
-import { forwardRef, useState } from 'react'
-
-const services = [
-  {
-    id: 1,
-    number: '01',
-    title: 'Brand Identity',
-    short: 'Strategy · Visual Design · Brand Systems',
-    desc: 'We craft distinctive brand identities that communicate who you are at a glance — from logo and typography to full visual systems built to scale.',
-    accent: '#6366f1',
-    accentRgb: '99,102,241',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-      </svg>
-    ),
-  },
-  {
-    id: 2,
-    number: '02',
-    title: 'Web Design & Dev',
-    short: 'UI/UX · Frontend · Full‑Stack',
-    desc: 'From pixel-perfect interfaces to performant full-stack applications — we build websites and web apps that look great and work flawlessly.',
-    accent: '#38bdf8',
-    accentRgb: '56,189,248',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-      </svg>
-    ),
-  },
-  {
-    id: 3,
-    number: '03',
-    title: 'Motion & 3D',
-    short: 'Animation · Interaction · Immersive Experiences',
-    desc: 'We bring interfaces to life with purposeful motion — from micro-interactions and scroll animations to full 3D scenes and immersive WebGL experiences.',
-    accent: '#a78bfa',
-    accentRgb: '167,139,250',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
-    ),
-  },
-  {
-    id: 4,
-    number: '04',
-    title: 'Digital Strategy',
-    short: 'Positioning · Growth · Product Thinking',
-    desc: 'We help ambitious teams sharpen their digital direction — mapping user journeys, refining positioning, and turning product goals into actionable roadmaps.',
-    accent: '#34d399',
-    accentRgb: '52,211,153',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-      </svg>
-    ),
-  },
-  {
-    id: 5,
-    number: '05',
-    title: 'Content & Copy',
-    short: 'Tone · Messaging · Storytelling',
-    desc: 'Words that convert and resonate. We write brand copy, landing pages, and content strategies that speak directly to your audience and drive real action.',
-    accent: '#fb923c',
-    accentRgb: '251,146,60',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-      </svg>
-    ),
-  },
-  {
-    id: 6,
-    number: '06',
-    title: 'Ongoing Support',
-    short: 'Maintenance · Iterations · Growth Partner',
-    desc: 'We stay in your corner post-launch — handling updates, performance tuning, and new features so your product keeps improving as your business grows.',
-    accent: '#f472b6',
-    accentRgb: '244,114,182',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-      </svg>
-    ),
-  },
-]
+import { forwardRef, useState, useMemo } from 'react'
 
 const ServicesSection = forwardRef(function ServicesSection(_, ref) {
   const [hovered, setHovered] = useState(null)
+
+  const services = useMemo(() => [
+    {
+      id: 1, number: '01', title: 'Brand Identity',
+      short: 'Strategy · Visual Design · Brand Systems',
+      desc: 'We craft distinctive brand identities that communicate who you are at a glance — from logo and typography to full visual systems built to scale.',
+      accent: '#6366f1', accentRgb: '99,102,241',
+    },
+    {
+      id: 2, number: '02', title: 'Web Design & Dev',
+      short: 'UI/UX · Frontend · Full‑Stack',
+      desc: 'From pixel-perfect interfaces to performant full-stack applications — we build websites and web apps that look great and work flawlessly.',
+      accent: '#38bdf8', accentRgb: '56,189,248',
+    },
+    {
+      id: 3, number: '03', title: 'Motion & 3D',
+      short: 'Animation · Interaction · Immersive Experiences',
+      desc: 'We bring interfaces to life with purposeful motion — from micro-interactions and scroll animations to full 3D scenes and immersive WebGL experiences.',
+      accent: '#a78bfa', accentRgb: '167,139,250',
+    },
+    {
+      id: 4, number: '04', title: 'Digital Strategy',
+      short: 'Positioning · Growth · Product Thinking',
+      desc: 'We help ambitious teams sharpen their digital direction — mapping user journeys, refining positioning, and turning product goals into actionable roadmaps.',
+      accent: '#34d399', accentRgb: '52,211,153',
+    },
+    {
+      id: 5, number: '05', title: 'Content & Copy',
+      short: 'Tone · Messaging · Storytelling',
+      desc: 'Words that convert and resonate. We write brand copy, landing pages, and content strategies that speak directly to your audience and drive real action.',
+      accent: '#fb923c', accentRgb: '251,146,60',
+    },
+    {
+      id: 6, number: '06', title: 'Ongoing Support',
+      short: 'Maintenance · Iterations · Growth Partner',
+      desc: 'We stay in your corner post-launch — handling updates, performance tuning, and new features so your product keeps improving as your business grows.',
+      accent: '#f472b6', accentRgb: '244,114,182',
+    },
+  ], [])
+
+  const icons = {
+    1: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>,
+    2: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+    3: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+    4: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+    5: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+    6: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>,
+  }
 
   return (
     <section
@@ -110,7 +71,7 @@ const ServicesSection = forwardRef(function ServicesSection(_, ref) {
         ].join(', '),
       }} />
 
-      <div style={{ position: 'relative', maxWidth: 1180, margin: '0 auto', padding: '0 32px' }}>
+      <div style={{ position: 'relative', width: '100%', padding: '0 48px', boxSizing: 'border-box' }}>
 
         {/* Header */}
         <div style={{ marginBottom: 72 }}>
@@ -166,7 +127,7 @@ const ServicesSection = forwardRef(function ServicesSection(_, ref) {
                 color: hovered === svc.id
                   ? `rgba(${svc.accentRgb}, 0.9)`
                   : 'rgba(255,255,255,0.2)',
-                minWidth: 28,
+                minWidth: 28, flexShrink: 0,
                 transition: 'color 0.3s ease',
               }}>
                 {svc.number}
@@ -183,11 +144,11 @@ const ServicesSection = forwardRef(function ServicesSection(_, ref) {
                 color: hovered === svc.id ? svc.accent : 'rgba(255,255,255,0.4)',
                 transition: 'all 0.35s ease',
               }}>
-                {svc.icon}
+                {icons[svc.id]}
               </div>
 
               {/* Title + tags */}
-              <div style={{ flex: '0 0 220px' }}>
+              <div style={{ flex: '0 0 220px', flexShrink: 0 }}>
                 <div style={{
                   fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 18,
                   color: hovered === svc.id ? '#fff' : 'rgba(255,255,255,0.85)',
@@ -214,7 +175,6 @@ const ServicesSection = forwardRef(function ServicesSection(_, ref) {
                   ? 'rgba(255,255,255,0.65)'
                   : 'rgba(255,255,255,0.28)',
                 transition: 'color 0.35s ease',
-                maxWidth: 520,
               }}>
                 {svc.desc}
               </p>

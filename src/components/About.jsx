@@ -21,7 +21,7 @@ function GlitterBackground() {
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
-          className="absolute rounded-full bg-white"
+          className="absolute rounded-full bg-gray-700"
           style={{
             width: particle.size,
             height: particle.size,
@@ -68,18 +68,14 @@ export default function AboutSection() {
 
   // Content Animation
   const contentY = useTransform(progress, [0, 0.35], [0, -250]);
-
   const contentOpacity = useTransform(progress, [0, 0.3], [1, 0]);
 
   // Video Expansion
   const videoWidth = useTransform(progress, [0.2, 0.8], ["42vw", "100vw"]);
-
   const videoHeight = useTransform(progress, [0.2, 0.8], ["72vh", "100vh"]);
-
   const videoRadius = useTransform(progress, [0.2, 0.8], [32, 0]);
 
   const revealOpacity = useTransform(progress, [0.72, 0.95], [0, 1]);
-
   const revealY = useTransform(progress, [0.72, 0.95], [100, 0]);
 
   const stats = [
@@ -90,29 +86,31 @@ export default function AboutSection() {
   ];
 
   return (
-    <section ref={sectionRef} className="relative h-[350vh]" style={{ background: '#08111e' }}>
+    <section 
+      ref={sectionRef} 
+      className="relative h-[350vh]" 
+      style={{ 
+        background: '#f5f3ef',
+        marginTop: '-2px',
+      }}
+    >
       {/* Sticky Scene */}
       <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Background */}
+        {/* Background Layer with Combined, Non-Clipping Ambient Gradients */}
         <div className="absolute inset-0" style={{
           background: [
-            'radial-gradient(ellipse 80% 60% at 85% 20%, rgba(99,102,241,0.10) 0%, transparent 60%)',
-            'radial-gradient(ellipse 70% 50% at 10% 80%, rgba(56,189,248,0.08) 0%, transparent 60%)',
-            'radial-gradient(ellipse 100% 80% at 50% 50%, rgba(14,30,55,0.6) 0%, transparent 100%)',
-            'linear-gradient(to bottom, #08111e 0%, #08111e 100%)',
+            'radial-gradient(ellipse 60% 50% at 85% 40%, rgba(99,102,241,0.08) 0%, transparent 70%)',
+            'radial-gradient(ellipse 60% 50% at 15% 85%, rgba(14,165,233,0.06) 0%, transparent 70%)',
+            'linear-gradient(to bottom, #f5f3ef 0%, #f5f3ef 100%)',
           ].join(', '),
         }}>
-          {/* Ambient Glows */}
-          <div className="absolute -top-52 right-0 h-[700px] w-[700px] rounded-full bg-violet-500/10 blur-[180px]" />
-
-          <div className="absolute bottom-0 left-0 h-[700px] w-[700px] rounded-full bg-cyan-500/10 blur-[180px]" />
 
           {/* Ultra Subtle Noise */}
           <div
-            className="absolute inset-0 opacity-[0.015]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage:
-                "radial-gradient(circle at center, white 0.5px, transparent 0.5px)",
+                "radial-gradient(circle at center, #000 0.5px, transparent 0.5px)",
               backgroundSize: "8px 8px",
             }}
           />
@@ -146,21 +144,21 @@ export default function AboutSection() {
           }}
           className="absolute left-[8%] top-1/2 z-20 max-w-[620px] -translate-y-1/2"
         >
-          <span className="text-xs font-semibold uppercase tracking-[4px] text-violet-400">
+          <span className="text-xs font-semibold uppercase tracking-[4px] text-indigo-500">
             About Rupana
           </span>
 
-          <h2 className="mt-6 text-[clamp(3rem,6vw,6rem)] font-black leading-[0.9] text-white">
+          <h2 className="mt-6 text-[clamp(3rem,6vw,6rem)] font-black leading-[0.9] text-gray-900">
             We Build
             <br />
             Digital
             <br />
-            <span className="bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">
               Experiences
             </span>
           </h2>
 
-          <p className="mt-8 max-w-xl text-lg leading-8 text-white/60">
+          <p className="mt-8 max-w-xl text-lg leading-8 text-gray-600">
             We create world-class digital products, premium brands, immersive
             websites and modern experiences designed to help ambitious companies
             grow faster.
@@ -170,13 +168,13 @@ export default function AboutSection() {
             {stats.map(([number, label]) => (
               <div
                 key={label}
-                className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl transition-all duration-500 hover:border-violet-500/30 hover:bg-white/[0.05]"
+                className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 backdrop-blur-xl transition-all duration-500 hover:border-indigo-400/30 hover:bg-black/[0.05]"
               >
-                <div className="bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-3xl font-black text-transparent">
+                <div className="bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-3xl font-black text-transparent">
                   {number}
                 </div>
 
-                <div className="mt-1 text-sm text-white/40">{label}</div>
+                <div className="mt-1 text-sm text-gray-500">{label}</div>
               </div>
             ))}
           </div>

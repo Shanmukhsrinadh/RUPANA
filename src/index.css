@@ -8,12 +8,14 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; background: #050810; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body { font-family: 'Inter', sans-serif; background: #f5f3ef; color: #111; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 #root { width: 100%; }
-::selection { background: rgba(79,195,247,0.3); color: #fff; }
+::selection { background: rgba(99,102,241,0.2); color: #111; }
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #050810; }
-::-webkit-scrollbar-thumb { background: rgba(79,195,247,0.25); border-radius: 3px; }
+::-webkit-scrollbar-track { background: #f5f3ef; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+.card-heading { font-family: 'Inter', sans-serif; font-size: clamp(15px,1.4vw,18px); font-weight: 600; color: #111; margin-bottom: 6px; }
+.card-desc { font-family: 'Inter', sans-serif; font-size: clamp(12px,0.9vw,13.5px); color: rgba(0,0,0,0.5); line-height: 1.6; margin-bottom: 14px; }
 
 @keyframes spin-slow  { to { transform: rotate(360deg); } }
 @keyframes spin-rev   { to { transform: rotate(-360deg); } }

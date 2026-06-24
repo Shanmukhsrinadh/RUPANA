@@ -18,8 +18,9 @@ description: Full light theme palette and component conversion decisions for the
 
 # Component decisions
 
-- **Navbar**: white glass capsule `rgba(255,255,255,0.82)`, dark logo dot, dark nav links, black "Get Started" button
-- **Hero**: light lavender radial gradient bg + light overlay on video, white glass form card, dark inputs, black submit button
+- **Navbar flat state**: floats over PAGE BACKGROUND (`#f5f3ef`), NOT over video — use DARK text (`#111`), no textShadow. White text causes invisible links on the light bg.
+- **Navbar capsule state**: white glass `rgba(255,255,255,0.82)`, dark logo dot, dark nav links, black "Get Started" button
+- **Hero layout**: image/video card is inset (margin ~98px top, ~32px sides), `borderRadius: 30px` all around, glass brief form at card bottom, ticker bar below card
 - **Projects**: `#f5f3ef` bg, dark headings, indigo accents for labels/toggles/arrows, white semi-transparent cards
 - **Services**: `#f5f3ef` bg, hover rows get accent-tinted bg, black CTA
 - **About**: `#f5f3ef` bg, dark text (text-gray-900/600/500), indigo gradient stats, glitter particles changed to `bg-gray-700`, "Crafted For Impact" final reveal stays white (overlaid on dark video)

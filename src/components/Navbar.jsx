@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 export default function Navbar({ onProjects, onMarketplace, onServices, onAbout }) {
-  const [atHero, setAtHero] = useState(true)
+  const [atHero, setAtHero] = useState(() => window.innerWidth > 760 && window.scrollY < 1)
   const [mobileMenu, setMobileMenu] = useState(false)
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
   const [time, setTime] = useState(new Date())
@@ -12,11 +12,16 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
   }, [])
 
   useEffect(() => {
-    const threshold = window.innerHeight * 0.82
-    const handleScroll = () => setAtHero(window.scrollY < threshold)
+    const handleScroll = () => {
+      const mobile = window.innerWidth <= 760
+      if (mobile) { setAtHero(false); return }
+      setAtHero(window.scrollY < 1)
+    }
     const handleResize = () => {
-      setScreenWidth(window.innerWidth)
-      if (window.innerWidth > 760) setMobileMenu(false)
+      const w = window.innerWidth
+      setScreenWidth(w)
+      if (w > 760) setMobileMenu(false)
+      if (w <= 760) setAtHero(false)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', handleResize)
@@ -62,7 +67,7 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
         <span style={{
           fontFamily: 'Syne, sans-serif', fontWeight: 700,
           fontSize: isSmallMobile ? 13 : 15,
-          letterSpacing: '2.5px', color: '#fff', textShadow: '0 1px 8px rgba(0,0,0,0.18)',
+          letterSpacing: '2.5px', color: '#111', textShadow: 'none',
         }}>
           RUPANA
         </span>
@@ -75,11 +80,11 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
             <button key={label} onClick={fn} style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
               fontFamily: 'Inter, sans-serif', fontSize: isTablet ? 13 : 14, fontWeight: 500,
-              color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 6px rgba(0,0,0,0.2)',
-              transition: 'color .2s',
+              color: 'rgba(0,0,0,0.55)', textShadow: 'none',
+              transition: 'color .2s ease',
             }}
-              onMouseEnter={e => e.target.style.color = '#fff'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.88)'}
+              onMouseEnter={e => e.target.style.color = '#111'}
+              onMouseLeave={e => e.target.style.color = 'rgba(0,0,0,0.55)'}
             >
               {label}
             </button>
@@ -93,17 +98,17 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
           <button style={{
             padding: isTablet ? '8px 18px' : '10px 24px',
             borderRadius: 999,
-            border: '1px solid rgba(255,255,255,0.55)',
-            background: 'rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            color: '#fff',
+            border: '1px solid rgba(0,0,0,0.15)',
+            background: 'rgba(0,0,0,0.05)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+            color: '#111',
             fontFamily: 'Inter, sans-serif', fontSize: 13.5, fontWeight: 500,
             cursor: 'pointer',
             transition: 'all .25s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.09)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.28)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)' }}
           >
             Contact Us
           </button>
@@ -131,7 +136,7 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
     </nav>
   )
 
-  // ─── CAPSULE NAVBAR ──────────────────────────────────────────────────────────
+  // ─── CAPSULE NAVBAR (Remains completely unchanged) ──────────────────────────
   const capsuleStyle = {
     width: '100%',
     maxWidth: isMobile ? '100%' : isTablet ? '1100px' : '1180px',
@@ -259,7 +264,7 @@ export default function Navbar({ onProjects, onMarketplace, onServices, onAbout 
 
   return (
     <>
-      {flatNav}
+      {!isMobile && flatNav}
       {capsuleNav}
     </>
   )

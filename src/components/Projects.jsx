@@ -1,292 +1,333 @@
-import { useState, useEffect, forwardRef, useMemo } from 'react'
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
-import L from 'leaflet'
-import works from '../data/works.json'
+"use client";
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
-const PROJECTS    = works.filter(w => w.category === 'projects')
-const MARKETPLACE = works.filter(w => w.category === 'marketplace')
+import { useState, useEffect, useMemo, forwardRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import L from "leaflet";
+import {
+  ArrowUpRight,
+  GitBranch,
+  PenTool,
+  Globe,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import works from "../data/works.json";
 
-// ─── CUSTOM PIN ICONS ─────────────────────────────────────────────────────────
+// ─── DATA SEPARATION ─────────────────────────────────────────────────────────
+const PROJECTS = works.filter((w) => w.category === "projects");
+const MARKETPLACE = works.filter((w) => w.category === "marketplace");
+
+const inlineCategories = ["Design", "Development", "WordPress"];
+const inlineProjects = [
+  { id: 1, category: "Design", title: "Timber Oak", image: "https://i.ibb.co/VcsX0wHG/Untitled-1.jpg", link: "https://www.figma.com/proto/ac8saGZ1ybu6zHQljHKavE/Untitled?node-id=15-1430" },
+  { id: 2, category: "Design", title: "M-Wallet", image: "https://shanmukhsrinadh.github.io/Shannuportfolio/img/M-wallet%20mockup%20screen%20figma.png", link: "https://www.figma.com/proto/H5oV9PNMpZlcCDqE7dnHLh/Shanmukh-srinadh-9550563283-?node-id=9-617" },
+  { id: 3, category: "Development", title: "Vaijayanta", image: "https://i.ibb.co/JWyNZJTd/Screenshot-2026-02-23-001847.png", link: "https://web-asset-manager--yop2483.replit.app" },
+  { id: 4, category: "Development", title: "Fashique", image: "https://i.ibb.co/Nh6fKrf/Whats-App-Image-2025-03-13-at-14-03-46.jpg", link: "https://shanmukhsrinadh.github.io/Fashiquecomstore01/" },
+  { id: 5, category: "Development", title: "Legacyonwheels", image: "https://i.ibb.co/RTWsFrvg/Screenshot-2025-02-12-014242.png", link: "https://shanmukhsrinadh.github.io/Legacyonwheelsclone-main/" },
+  { id: 6, category: "Development", title: "Earthquake Detection", image: "https://i.ibb.co/bHjYmG1/Screenshot-2024-11-07-234521.png", link: "https://earthquakemodel-2.onrender.com/" },
+  { id: 7, category: "WordPress", title: "Maply Travel", image: "https://i.ibb.co/tPxf2Tmt/Wordpress-static.png", link: "https://dev-sweb1.pantheonsite.io/" },
+  { id: 8, category: "WordPress", title: "Gadgets WooCommerce", image: "https://i.ibb.co/TMBYjY2q/Woo-com.png", link: "https://dev-wp02woocom.pantheonsite.io/" },
+];
+
+// ─── LEAFLET PIN CONFIGURATION ───────────────────────────────────────────────
 function buildPin(active) {
-  const size = active ? 28 : 16
+  const size = active ? 10 : 5;
   return L.divIcon({
-    className: '',
+    className: "",
     html: `<div style="
-      width:${size}px;height:${size}px;
-      background:#6366f1;
-      border:${active ? 4 : 3}px solid #fff;
-      border-radius:50%;
-      box-shadow:0 2px ${active ? 16 : 8}px rgba(99,102,241,${active ? 0.65 : 0.35}),0 0 0 ${active ? 5 : 0}px rgba(99,102,241,0.15);
-      transition:all .35s cubic-bezier(.22,1,.36,1);
+      width: ${size}px; height: ${size}px;
+      background: #6366f1;
+      border-radius: 50%;
+      box-shadow: ${active ? "0 0 0 5px rgba(99,102,241,0.15)" : "none"};
+      transition: all .35s cubic-bezier(.215, .610, .355, 1);
+      transform: translate(-25%, -25%);
     "></div>`,
-    iconSize:   [size, size],
+    iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
-  })
+  });
 }
+const PIN_INACTIVE = buildPin(false);
+const PIN_ACTIVE = buildPin(true);
 
-const PIN_INACTIVE = buildPin(false)
-const PIN_ACTIVE   = buildPin(true)
-
-// ─── MAP FLY-TO CONTROLLER ────────────────────────────────────────────────────
 function MapFlyTo({ lat, lng }) {
-  const map = useMap()
+  const map = useMap();
   useEffect(() => {
-    map.flyTo([lat, lng], 12, { duration: 1.4, easeLinearity: 0.22 })
-  }, [lat, lng, map])
-  return null
+    map.flyTo([lat, lng], 12, { duration: 1.4, easeLinearity: 0.2 });
+  }, [lat, lng, map]);
+  return null;
 }
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+// ─── COMPONENT IMPLEMENTATION ────────────────────────────────────────────────
 const Projects = forwardRef(function Projects(_, ref) {
-  const [tab,    setTab]    = useState('projects')
-  const [fading, setFading] = useState(false)
-  const [active, setActive] = useState(0)
-  const [w,      setW]      = useState(window.innerWidth)
+  const [tab, setTab] = useState("projects");
+  const [fading, setFading] = useState(false);
+  const [active, setActive] = useState(0);
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+
+  // Touch Screen specific sub-ui state management
+  const [activeCategory, setActiveCategory] = useState("Design");
+  const [hoveredId, setHoveredId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const [canHover, setCanHover] = useState(true);
 
   useEffect(() => {
-    const onResize = () => setW(window.innerWidth)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+    const onResize = () => setW(window.innerWidth);
+    const mediaQuery = window.matchMedia("(hover: hover)");
 
-  // expose switchTab via custom DOM event (used by Navbar / Footer links)
+    setCanHover(mediaQuery.matches);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   useEffect(() => {
-    const el = ref?.current
-    if (!el) return
-    const handler = e => switchTab(e.detail)
-    el.addEventListener('setTab', handler)
-    return () => el.removeEventListener('setTab', handler)
-  }, [ref, tab])
+    const el = ref?.current;
+    if (!el) return;
+    const handler = (e) => switchTab(e.detail);
+    el.addEventListener("setTab", handler);
+    return () => el.removeEventListener("setTab", handler);
+  }, [ref, tab]);
 
-  const switchTab = t => {
-    if (t === tab) return
-    setFading(true)
-    setTimeout(() => { setTab(t); setActive(0); setFading(false) }, 200)
-  }
+  const switchTab = (t) => {
+    if (t === tab) return;
+    setFading(true);
+    setTimeout(() => { setTab(t); setActive(0); setFading(false); }, 250);
+  };
 
-  const isMobile = w < 980
-  const items    = tab === 'projects' ? PROJECTS : MARKETPLACE
-  const current  = items[active] ?? items[0]
+  const isMobile = w < 980;
+  const items = tab === "projects" ? PROJECTS : MARKETPLACE;
+  const current = items[active] ?? items[0];
+  const INDIA = useMemo(() => [20.5937, 78.9629], []);
 
-  const INDIA = useMemo(() => [20.5937, 78.9629], [])
+  // Filter systems for touch display project lists
+  const filteredProjects = inlineProjects.filter((p) => p.category === activeCategory);
+  const visibleProjects = showAll || filteredProjects.length <= 2 ? filteredProjects : filteredProjects.slice(0, 2);
+
+  useEffect(() => {
+    setShowAll(false);
+    setExpandedId(null);
+  }, [activeCategory]);
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "Design": return <PenTool className="w-5 h-5" />;
+      case "Development": return <GitBranch className="w-5 h-5" />;
+      case "WordPress": return <Globe className="w-5 h-5" />;
+      default: return <ArrowUpRight className="w-5 h-5" />;
+    }
+  };
 
   return (
     <section ref={ref} id="projects" style={{
-      background: '#f5f3ef',
-      padding: 'clamp(60px,8vw,112px) 0 clamp(50px,6vw,96px)',
-      position: 'relative',
+      background: canHover ? "#F9F8F5" : "black", // Swapping background style context seamlessly
+      padding: "clamp(60px,8vw,120px) 0 clamp(60px,8vw,120px)",
+      position: "relative",
+      minHeight: "100/v",
     }}>
-      <div style={{ padding: '0 clamp(16px,5vw,80px)' }}>
+      <div style={{ padding: "0 clamp(16px,5vw,80px)" }}>
 
-        {/* ── HEADER ─────────────────────────────────────────── */}
+        {/* ── STICKY HEADER COMPONENT BLOCK ──────────────────────────────── */}
         <div style={{
-          display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          marginBottom: 'clamp(28px,4vw,52px)', gap: 20,
+          position: "sticky",
+          top: 0,
+          zIndex: 40,
+          background: canHover ? "#F9F8F5" : "black",
+          paddingTop: "20px",
+          paddingBottom: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          marginBottom: "clamp(40px,6vw,80px)",
+          gap: 24,
+          borderBottom: "1px solid rgba(0,0,0,0.05)"
         }}>
-          <div>
-            <p style={{ fontFamily: 'Syne,sans-serif', color: '#6366f1', fontSize: 11, letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 600, marginBottom: 10 }}>
-              Our portfolio
-            </p>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, color: '#111', fontSize: 'clamp(26px,3.5vw,52px)', lineHeight: 1.1, letterSpacing: '-1px', marginBottom: 10 }}>
-              {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
-            </h2>
-            <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 420 }}>
-              {tab === 'projects'
-                ? 'Crafted experiences built for modern brands and immersive digital products.'
-                : 'Premium templates and assets designed for faster launches.'}
-            </p>
-          </div>
-
-          {/* Tab toggle */}
-          <div style={{ position: 'relative', display: 'flex', background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 999, padding: 4, width: 'clamp(240px,22vw,300px)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', flexShrink: 0 }}>
-            <div style={{
-              position: 'absolute', top: 4,
-              left: tab === 'projects' ? 4 : '50%',
-              width: 'calc(50% - 4px)', height: 'calc(100% - 8px)',
-              borderRadius: 999,
-              background: 'linear-gradient(135deg,#6366f1,#0ea5e9)',
-              boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
-              transition: 'all .45s cubic-bezier(.22,1,.36,1)', zIndex: 1,
-            }} />
-            {['projects', 'marketplace'].map(t => (
-              <button key={t} onClick={() => switchTab(t)} style={{
-                position: 'relative', zIndex: 2, flex: 1,
-                padding: 'clamp(8px,0.8vw,12px) clamp(12px,1.5vw,24px)',
-                border: 'none', borderRadius: 999, background: 'transparent', cursor: 'pointer',
-                fontFamily: 'Inter,sans-serif', fontSize: 'clamp(11px,0.9vw,13px)',
-                fontWeight: tab === t ? 600 : 500,
-                color: tab === t ? '#fff' : 'rgba(0,0,0,0.45)',
-                transition: 'color .35s ease',
-              }}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
+          {canHover ? (
+            <>
+              <div>
+                <p style={{ fontFamily: "Syne,sans-serif", color: "#6366f1", fontSize: 10, letterSpacing: "3px", textTransform: "uppercase", fontWeight: 600, marginBottom: 12 }}>
+                  Our portfolio
+                </p>
+                <h2 style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: "#111", fontSize: "clamp(28px,3.8vw,56px)", lineHeight: 1.1, letterSpacing: "-1px", margin: 0 }}>
+                  {tab === "projects" ? "Selected Projects" : "Marketplace"}
+                </h2>
+              </div>
+              <div style={{ display: "flex", gap: 32, fontFamily: "Inter,sans-serif", fontSize: 14, fontWeight: 500 }}>
+                {["projects", "marketplace"].map((t) => {
+                  const isSelected = tab === t;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => switchTab(t)}
+                      style={{
+                        background: "none", border: "none", padding: "0 0 4px 0", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit",
+                        fontWeight: isSelected ? 600 : 400, color: isSelected ? "#111" : "rgba(0,0,0,0.3)",
+                        borderBottom: `2px solid ${isSelected ? "#6366f1" : "transparent"}`,
+                        transition: "all .25s ease",
+                      }}
+                    >
+                      {t.charAt(0).toUpperCase() + t.slice(1)}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            // Custom UI Header Mode for Non-Hover/Touch device contexts
+            <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-8">
+              <h2 className="text-5xl md:text-7xl font-bold text-white">
+                My <br /> <span className="text-white/30">Work</span>
+              </h2>
+              <div className="flex flex-wrap gap-4">
+                {inlineCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`text-sm uppercase tracking-wider px-4 py-2 rounded-full border transition-all ${
+                      activeCategory === cat
+                        ? "border-indigo-500 bg-indigo-500 text-white"
+                        : "border-white/10 hover:border-white/30 text-gray-400"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* ── BODY: split-screen or stacked ─────────────────── */}
-        <div style={{
-          opacity: fading ? 0 : 1,
-          transition: 'opacity .2s',
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-          gap: 'clamp(20px,3vw,40px)',
-          alignItems: 'start',
-        }}>
-
-          {/* LEFT: Card list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, order: isMobile ? 1 : 0 }}>
-            {items.map((item, i) => {
-              const isActive = active === i
-              return (
-                <div
-                  key={item.id}
-                  onMouseEnter={() => setActive(i)}
-                  onClick={() => setActive(i)}
-                  style={{
-                    display: 'flex', gap: 14, alignItems: 'flex-start',
-                    padding: 'clamp(14px,1.6vw,20px)',
-                    borderRadius: 16, cursor: 'pointer',
-                    background: isActive ? 'rgba(99,102,241,0.06)' : 'transparent',
-                    border: `1px solid ${isActive ? 'rgba(99,102,241,0.22)' : 'rgba(0,0,0,0.06)'}`,
-                    transition: 'all .3s cubic-bezier(.22,1,.36,1)',
-                    position: 'relative', overflow: 'hidden',
-                  }}
-                >
-                  {/* Indigo accent bar */}
-                  <div style={{
-                    position: 'absolute', left: 0, top: '18%', bottom: '18%',
-                    width: 3, borderRadius: '0 4px 4px 0',
-                    background: 'linear-gradient(to bottom,#6366f1,#0ea5e9)',
-                    opacity: isActive ? 1 : 0, transition: 'opacity .3s',
-                  }} />
-
-                  {/* Thumbnail */}
-                  <div style={{
-                    width: 44, height: 44, borderRadius: 10, background: item.bg,
-                    flexShrink: 0, overflow: 'hidden',
-                    border: '1px solid rgba(0,0,0,0.07)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  }}>
-                    {item.image && (
-                      <img src={item.image} alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
-                      <h3 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 'clamp(14px,1.2vw,17px)', color: '#111', lineHeight: 1.25 }}>
+        {/* ── CORE CONTENT CONTENT CONTROLLERS ───────────────────────────── */}
+        {canHover ? (
+          <div style={{
+            opacity: fading ? 0 : 1,
+            transition: "opacity .25s cubic-bezier(.215, .610, .355, 1)",
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1.1fr 0.9fr",
+            gap: "clamp(40px,6vw,96px)",
+            alignItems: "start",
+          }}>
+            {/* LEFT COLUMN */}
+            <div style={{ display: "flex", flexDirection: "column", order: isMobile ? 1 : 0 }}>
+              {items.map((item, i) => {
+                const isActive = active === i;
+                return (
+                  <div
+                    key={item.id}
+                    onMouseEnter={() => setActive(i)}
+                    onClick={() => setActive(i)}
+                    style={{
+                      padding: "26px 0", cursor: "pointer", borderBottom: "1px solid rgba(0,0,0,0.03)",
+                      transition: "all .35s cubic-bezier(.215, .610, .355, 1)", opacity: isActive ? 1 : 0.2,
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <h3 style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "clamp(16px,1.4vw,21px)", color: '#111', margin: 0, letterSpacing: "-0.3px" }}>
                         {item.title}
                       </h3>
-                      {item.price && (
-                        <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 11.5, fontWeight: 700, color: '#6366f1', whiteSpace: 'nowrap', background: 'rgba(99,102,241,0.1)', padding: '2px 8px', borderRadius: 6, flexShrink: 0 }}>
-                          {item.price}
-                        </span>
-                      )}
                     </div>
-
-                    {item.location && (
-                      <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 11.5, color: 'rgba(0,0,0,0.38)', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span style={{ fontSize: 10 }}>📍</span> {item.location}
-                      </p>
-                    )}
-
-                    {/* Description — expands when active */}
-                    <div style={{ overflow: 'hidden', maxHeight: isActive ? 80 : 0, opacity: isActive ? 1 : 0, transition: 'max-height .35s ease, opacity .3s ease', marginBottom: isActive ? 10 : 0 }}>
-                      <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 'clamp(12px,0.9vw,13px)', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6 }}>
+                    <div style={{
+                      overflow: "hidden", maxHeight: isActive ? 160 : 0, opacity: isActive ? 1 : 0,
+                      transition: "max-height .35s cubic-bezier(.25,1,.5,1), opacity .3s ease",
+                    }}>
+                      {tab === "projects" && (
+                        <p style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, color: "rgba(0,0,0,0.35)", margin: "6px 0 10px 0", fontWeight: 500 }}>
+                          {item.location || "Global"}
+                        </p>
+                      )}
+                      <p style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1vw,14px)", color: "rgba(0,0,0,0.5)", lineHeight: 1.6, margin: "0 0 14px 0", maxWidth: "92%" }}>
                         {item.desc}
                       </p>
                     </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                    {/* View link — appears when active */}
-                    <div style={{ overflow: 'hidden', maxHeight: isActive ? 40 : 0, opacity: isActive ? 1 : 0, transition: 'max-height .35s ease, opacity .3s ease' }}>
-                      {item.link && (
-                        <a
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={e => e.stopPropagation()}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'Inter,sans-serif', fontSize: 12.5, fontWeight: 600, color: '#6366f1', textDecoration: 'none', background: 'rgba(99,102,241,0.1)', padding: '5px 12px', borderRadius: 8, transition: 'background .2s' }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.18)'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
-                        >
-                          View Project ↗
-                        </a>
-                      )}
+            {/* RIGHT COLUMN MAP PREVIEW PANEL */}
+            <div style={{
+              position: isMobile ? "relative" : "sticky", top: 180,
+              height: isMobile ? 300 : 460, order: isMobile ? 0 : 1,
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}>
+              {tab === "projects" && (
+                <div style={{
+                  width: "100%", height: "100%",
+                  WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+                  maskImage: "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+                  WebkitMaskComposite: "source-in", maskComposite: "intersect",
+                }}>
+                  <MapContainer center={INDIA} zoom={5} style={{ width: "100%", height: "100%", background: "#F9F8F5", mixBlendMode: "darken", opacity: 0.75 }} zoomControl={false} scrollWheelZoom={false} attributionControl={false}>
+                    <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; CARTO' />
+                    {current && <MapFlyTo lat={current.lat} lng={current.lng} />}
+                    {items.map((item, i) => (
+                      <Marker key={`${tab}-${item.id}`} position={[item.lat, item.lng]} icon={active === i ? PIN_ACTIVE : PIN_INACTIVE} eventHandlers={{ click: () => setActive(i) }} />
+                    ))}
+                  </MapContainer>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* ── TOUCH DEVICE UI REPLACEMENT ───────────────────────────────── */
+          <div className="flex flex-col">
+            <AnimatePresence>
+              {visibleProjects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={() => setExpandedId(expandedId === project.id ? null : project.id)}
+                  className="relative border-t border-white/10 py-12 cursor-pointer"
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-xs text-indigo-400 block mb-2">{project.category}</span>
+                      <h3 className="text-3xl md:text-5xl text-gray-400 hover:text-white transition-colors">{project.title}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-white text-black">
+                      {getCategoryIcon(project.category)}
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
 
-          {/* RIGHT: Sticky Map */}
-          <div style={{
-            position: isMobile ? 'relative' : 'sticky',
-            top: isMobile ? 'auto' : 92,
-            height: isMobile ? 300 : 'calc(100vh - 180px)',
-            minHeight: isMobile ? 300 : 480,
-            borderRadius: 20,
-            overflow: 'hidden',
-            border: '1px solid rgba(0,0,0,0.09)',
-            boxShadow: '0 20px 56px rgba(0,0,0,0.1)',
-            order: isMobile ? 0 : 1,
-          }}>
-            <MapContainer
-              center={INDIA}
-              zoom={5}
-              style={{ width: '100%', height: '100%' }}
-              zoomControl={false}
-              scrollWheelZoom={false}
-              attributionControl={false}
-            >
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                attribution="&copy; OpenStreetMap contributors &copy; CARTO"
-              />
-
-              {current && <MapFlyTo lat={current.lat} lng={current.lng} />}
-
-              {items.map((item, i) => (
-                <Marker
-                  key={`${tab}-${item.id}`}
-                  position={[item.lat, item.lng]}
-                  icon={active === i ? PIN_ACTIVE : PIN_INACTIVE}
-                  eventHandlers={{ click: () => setActive(i) }}
-                />
+                  {expandedId === project.id && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mt-6 overflow-hidden rounded-lg">
+                      <img src={project.image} alt={project.title} loading="lazy" className="w-full rounded-lg object-cover" />
+                      <div className="mt-4">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); window.open(project.link, "_blank"); }}
+                          style={{ width: "100%", background: "#6366f1", color: "#fff", border: "none", borderRadius: 8, padding: "12px 0", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "Inter,sans-serif" }}
+                        >
+                          Visit Project
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
               ))}
-            </MapContainer>
+            </AnimatePresence>
 
-            {/* Active project label */}
-            <div style={{
-              position: 'absolute', bottom: 14, left: 14, zIndex: 1000,
-              background: 'rgba(255,255,255,0.92)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              borderRadius: 12, padding: '8px 14px',
-              fontFamily: 'Inter,sans-serif', fontSize: 12.5, fontWeight: 500, color: '#111',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-              display: 'flex', alignItems: 'center', gap: 7,
-              pointerEvents: 'none',
-            }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366f1', flexShrink: 0, boxShadow: '0 0 0 3px rgba(99,102,241,0.2)' }} />
-              {current?.location ?? current?.title}
-            </div>
-
-            {/* Attribution */}
-            <div style={{ position: 'absolute', bottom: 14, right: 14, zIndex: 1000, fontFamily: 'Inter,sans-serif', fontSize: 10, color: 'rgba(0,0,0,0.3)', pointerEvents: 'none' }}>
-              © OpenStreetMap · CARTO
-            </div>
+            {filteredProjects.length > 2 && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  style={{ background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 999, padding: "10px 24px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "Inter,sans-serif", display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  {showAll ? "View Less" : "View All Projects"}
+                  {showAll ? <ChevronUp style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
+                </button>
+              </div>
+            )}
           </div>
+        )}
 
-        </div>
       </div>
     </section>
-  )
-})
+  );
+});
 
-export default Projects
+export default Projects;

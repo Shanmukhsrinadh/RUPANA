@@ -34,7 +34,7 @@ export default function Hero() {
   const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const [form, setForm] = useState({ name: '', phone: '', email: '', brief: '' })
   const [chips, setChips] = useState([])
-  const [sent,  setSent]  = useState(false)
+  const [sent, setSent] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth)
@@ -190,9 +190,9 @@ export default function Hero() {
                 </div>
 
                 <button type="submit" style={{
-                  background: sent ? 'rgba(34,197,94,0.85)' : 'rgba(255,255,255,0.18)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
+                  background: 'rgba(59, 130, 246, 0.8)',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
                   color: '#ffffff',
                   border: '1px solid rgba(255,255,255,0.3)',
                   padding: isSmall ? '7px 16px' : '10px 22px',

@@ -9,6 +9,9 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react-leaflet', '@react-leaflet/core'],
+  },
   server: {
     host: '0.0.0.0',
     port: 5000,

@@ -1,394 +1,271 @@
-import { useState, useEffect, forwardRef } from 'react';
-import works from '../data/works.json';
+import { useState, useEffect, forwardRef, useMemo } from 'react'
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import works from '../data/works.json'
 
-const PROJECTS = works.filter(w => w.category === 'projects');
-const MARKETPLACE = works.filter(w => w.category === 'marketplace');
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const PROJECTS = works.filter(w => w.category === 'projects')
+const MARKETPLACE = works.filter(w => w.category === 'marketplace')
 
-const filterWebDev = (text) => !/web\s*development/i.test(text || '');
+// ─── MAP PIN ICONS ────────────────────────────────────────────────────────────
+function buildPin(active) {
+  const size = active ? 28 : 18
+  const ring = active ? 6 : 4
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:${size}px;height:${size}px;
+      background:#6366f1;
+      border:${ring - (active ? 2 : 1)}px solid #fff;
+      border-radius:50%;
+      box-shadow:0 2px ${active ? 16 : 8}px rgba(99,102,241,${active ? 0.65 : 0.35}),0 0 0 ${active ? 4 : 0}px rgba(99,102,241,0.18);
+      transition:all .35s cubic-bezier(.22,1,.36,1);
+    "></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  })
+}
 
+const PIN_INACTIVE = buildPin(false)
+const PIN_ACTIVE   = buildPin(true)
+
+// ─── MAP FLY-TO CONTROLLER ───────────────────────────────────────────────────
+function MapFlyTo({ lat, lng }) {
+  const map = useMap()
+  useEffect(() => {
+    map.flyTo([lat, lng], 12, { duration: 1.4, easeLinearity: 0.22 })
+  }, [lat, lng, map])
+  return null
+}
+
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 const Projects = forwardRef(function Projects(_, ref) {
-  const [tab, setTab] = useState('projects');
-  const [fading, setFading] = useState(false);
-  const [hovered, setHovered] = useState(0);
-  const [isMobileView, setIsMobileView] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [itemsToShow, setItemsToShow] = useState(3);
-
-  const checkViewMode = () => {
-    const width = window.innerWidth;
-    setIsMobileView(width <= 860);
-    return width;
-  };
-
-  const getItemsToShow = () => {
-    const width = window.innerWidth;
-    if (width <= 540) return 2;
-    if (width <= 768) return 2;
-    if (width <= 980) return 4;
-    return 3;
-  };
+  const [tab, setTab]       = useState('projects')
+  const [fading, setFading] = useState(false)
+  const [active, setActive] = useState(0)
+  const [w, setW]           = useState(window.innerWidth)
 
   useEffect(() => {
-    const handleResize = () => {
-      const width = checkViewMode();
-      const newItemsToShow = getItemsToShow();
-      setItemsToShow(newItemsToShow);
-      if (expanded) {
-        const allItems = tab === 'projects' ? PROJECTS : MARKETPLACE;
-        if (allItems.length <= newItemsToShow) setExpanded(false);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [tab, expanded]);
+    const onResize = () => setW(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
+  // expose setTab via custom event (used by Navbar / Footer links)
   useEffect(() => {
-    const el = ref?.current;
-    if (!el) return;
-    const handler = e => switchTab(e.detail);
-    el.addEventListener('setTab', handler);
-    return () => el.removeEventListener('setTab', handler);
-  }, [ref, tab]);
+    const el = ref?.current
+    if (!el) return
+    const handler = e => switchTab(e.detail)
+    el.addEventListener('setTab', handler)
+    return () => el.removeEventListener('setTab', handler)
+  }, [ref, tab])
 
   const switchTab = t => {
-    if (t === tab) return;
-    setFading(true);
-    setTimeout(() => { setTab(t); setHovered(0); setExpanded(false); setFading(false); }, 150);
-  };
+    if (t === tab) return
+    setFading(true)
+    setTimeout(() => { setTab(t); setActive(0); setFading(false) }, 200)
+  }
 
-  const allItems = tab === 'projects' ? PROJECTS : MARKETPLACE;
-  const visibleItems = isMobileView && expanded ? allItems : (isMobileView ? allItems.slice(0, itemsToShow) : allItems);
-  const hasMore = isMobileView && allItems.length > itemsToShow;
-  const preview = allItems[hovered] ?? allItems[0];
+  const isMobile = w < 980
+  const items    = tab === 'projects' ? PROJECTS : MARKETPLACE
+  const current  = items[active] ?? items[0]
 
-  const s = {
-    section: {
-      background: '#f5f3ef',
-      padding: 'clamp(60px, 8vw, 112px) 0 clamp(50px, 6vw, 96px)',
-      marginTop: '-2px',
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    topLine: { display: 'none' },
-    inner: {
-      width: '100%',
-      padding: '0 clamp(16px, 5vw, 80px)',
-      position: 'relative',
-      zIndex: 2,
-    },
-    headerRow: isMobileView ? {
-      display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-      marginBottom: 'clamp(32px, 5vw, 56px)',
-    } : {
-      display: 'grid', gridTemplateColumns: '1fr auto',
-      gap: '0 clamp(16px, 3vw, 32px)',
-      marginBottom: 'clamp(32px, 5vw, 56px)',
-    },
-    label: {
-      fontFamily: "'Syne', sans-serif",
-      color: '#6366f1', fontSize: 'clamp(10px, 0.8vw, 12px)', letterSpacing: '3px',
-      textTransform: 'uppercase', fontWeight: 600,
-      marginBottom: isMobileView ? 10 : 0,
-      ...(isMobileView ? { order: 1 } : { gridColumn: '1 / 2', gridRow: '1', alignSelf: 'end' }),
-    },
-    heading: {
-      fontFamily: "'Syne', sans-serif", fontWeight: 800,
-      color: '#111',
-      fontSize: 'clamp(26px, 3.5vw, 52px)', lineHeight: 1.1, letterSpacing: '-1px',
-      marginBottom: isMobileView ? 12 : 0,
-      ...(isMobileView ? { order: 2 } : { gridColumn: '1 / 2', gridRow: '2', alignSelf: 'center' }),
-    },
-    sub: {
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 'clamp(13px, 1.1vw, 15px)',
-      color: 'rgba(0,0,0,0.5)',
-      lineHeight: 1.6, maxWidth: 440,
-      marginTop: isMobileView ? 0 : 12,
-      ...(isMobileView ? { order: 3 } : { gridColumn: '1 / 2', gridRow: '3', alignSelf: 'start' }),
-    },
-    toggleWrap: {
-      position: 'relative', display: 'flex', alignItems: 'center',
-      background: 'rgba(0,0,0,0.06)',
-      border: '1px solid rgba(0,0,0,0.08)',
-      borderRadius: 999, padding: 4, overflow: 'hidden',
-      width: 'clamp(240px, 22vw, 300px)',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-      marginTop: isMobileView ? 20 : 0,
-      ...(isMobileView ? { order: 4 } : { gridColumn: '2', gridRow: '2', alignSelf: 'center' }),
-    },
-    toggleBtn: (active) => ({
-      position: 'relative', zIndex: 2, flex: 1,
-      padding: 'clamp(8px, 0.8vw, 12px) clamp(12px, 1.5vw, 24px)',
-      border: 'none', borderRadius: 999, background: 'transparent',
-      cursor: 'pointer',
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 'clamp(11px, 0.9vw, 13px)',
-      fontWeight: active ? 600 : 500,
-      color: active ? '#ffffff' : 'rgba(0,0,0,0.45)',
-      transition: 'color .35s ease',
-    }),
-    body: {
-      display: 'grid',
-      gridTemplateColumns: '1fr clamp(400px, 38vw, 540px)',
-      gap: 'clamp(24px, 4vw, 56px)', alignItems: 'center',
-      opacity: fading ? 0 : 1, transition: 'opacity .2s',
-    },
-    list: { display: 'flex', flexDirection: 'column' },
-    listItem: (active) => ({
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: 'clamp(12px, 1.5vw, 20px) 0', cursor: 'pointer',
-      borderBottom: '1px solid rgba(0,0,0,0.07)',
-      transition: 'all .25s', opacity: active ? 1 : 0.38,
-    }),
-    listTitle: (active) => ({
-      fontFamily: "'Inter', sans-serif",
-      fontWeight: active ? 600 : 500,
-      fontSize: 'clamp(16px, 2vw, 24px)', color: '#111',
-      letterSpacing: '-0.3px', transition: 'transform .25s ease',
-      transform: active ? 'translateX(8px)' : 'translateX(0)',
-    }),
-    listMeta: (active) => ({
-      display: 'flex', alignItems: 'center', gap: 10,
-      opacity: active ? 1 : 0, transition: 'opacity .2s',
-    }),
-    listType: {
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 'clamp(10px, 0.8vw, 11px)', fontWeight: 600, letterSpacing: '1.5px',
-      textTransform: 'uppercase', color: '#6366f1',
-    },
-    listArrow: {
-      width: 'clamp(24px, 2vw, 32px)', height: 'clamp(24px, 2vw, 32px)', borderRadius: '50%',
-      background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      color: '#6366f1', fontSize: 'clamp(11px, 1vw, 14px)',
-    },
-    previewWrap: { position: 'relative', width: '100%' },
-    previewCard: {
-      width: '100%', aspectRatio: '16/10', borderRadius: 'clamp(12px, 1.5vw, 24px)', overflow: 'hidden',
-      position: 'relative', background: preview.bg,
-      boxShadow: `0 24px 56px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.07)`,
-      transition: 'all .4s ease',
-    },
-    previewGlow: {
-      position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
-      background: `radial-gradient(circle at 60% 80%, ${preview.accent}44, transparent 65%)`,
-      transition: 'background .4s',
-    },
-    previewOverlay: {
-      position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 3,
-      background: 'linear-gradient(to top, rgba(0,0,0,0.88), rgba(0,0,0,0.35) 60%, transparent)',
-      padding: 'clamp(16px, 2vw, 28px) clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px)',
-    },
-    previewTitle: {
-      fontFamily: "'Inter', sans-serif", fontSize: 'clamp(15px, 1.5vw, 20px)', fontWeight: 600,
-      color: '#fff', marginBottom: 6,
-    },
-    previewMeta: { display: 'flex', gap: 6, flexWrap: 'wrap' },
-    previewTag: {
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 'clamp(9px, 0.7vw, 11px)', padding: '3px clamp(8px, 0.8vw, 12px)', borderRadius: 50,
-      background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)',
-      border: '1px solid rgba(255,255,255,0.18)',
-    },
-    visitBtn: {
-      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', right: 'clamp(10px, 1.2vw, 16px)', zIndex: 3,
-      padding: '5px clamp(12px, 1vw, 18px)', borderRadius: 50, cursor: 'pointer',
-      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', color: '#fff',
-      fontSize: 'clamp(11px, 0.8vw, 13px)', fontWeight: 600, fontFamily: "'Inter', sans-serif",
-      background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)',
-      transition: 'all .2s', display: 'flex', alignItems: 'center', gap: 6,
-    },
-    priceTag: {
-      position: 'absolute', top: 'clamp(10px, 1.2vw, 16px)', left: 'clamp(10px, 1.2vw, 16px)', zIndex: 3,
-      padding: '5px clamp(10px, 0.9vw, 16px)', borderRadius: 999,
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 'clamp(11px, 0.9vw, 13px)', fontWeight: 700,
-      color: '#fff', background: 'rgba(0,0,0,0.55)',
-      backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)',
-    },
-    gridContainer: {
-      opacity: fading ? 0 : 1,
-      transform: fading ? 'translateY(10px)' : 'translateY(0px)',
-      filter: fading ? 'blur(8px)' : 'blur(0px)',
-      transition: 'opacity .35s ease, transform .35s ease, filter .35s ease',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 310px), 1fr))',
-      gap: 'clamp(16px, 3vw, 24px)',
-    },
-    card: {
-      position: 'relative', overflow: 'hidden',
-      borderRadius: 'clamp(16px, 2vw, 24px)',
-      background: 'rgba(255,255,255,0.7)',
-      border: '1px solid rgba(0,0,0,0.07)',
-      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
-      cursor: 'pointer',
-      transition: 'transform .45s cubic-bezier(.22,1,.36,1), box-shadow .45s cubic-bezier(.22,1,.36,1), border-color .35s ease, background .45s ease',
-    },
-    cardVisual: {
-      position: 'relative', width: '100%', aspectRatio: '16/9.5', overflow: 'hidden',
-    },
-    cardBody: { padding: 'clamp(16px, 2.2vw, 24px)' },
-    exploreBtn: {
-      position: 'relative', overflow: 'hidden', border: 'none', cursor: 'pointer',
-      padding: 'clamp(11px, 1.2vw, 15px) clamp(24px, 2.5vw, 36px)',
-      borderRadius: 999,
-      fontFamily: "'Inter', sans-serif",
-      background: expanded ? 'rgba(0,0,0,0.07)' : 'linear-gradient(135deg, #6366f1, #0ea5e9)',
-      color: expanded ? '#111' : '#fff',
-      fontSize: 'clamp(12px, 1vw, 14px)', fontWeight: 600, letterSpacing: '.4px',
-      transition: 'all .35s cubic-bezier(.22,1,.36,1)',
-      boxShadow: expanded ? 'none' : '0 12px 30px rgba(99,102,241,0.25)',
-    },
-  };
+  // ─── INDIA default center ────────────────────────────────────────────────
+  const INDIA = useMemo(() => [20.5937, 78.9629], [])
 
-  const renderDesktopLayout = () => (
-    <div className="projects-body" style={s.body}>
-      <div className="projects-list" style={s.list}>
-        {allItems.map((item, i) => {
-          const active = hovered === i;
-          return (
-            <div key={item.id} style={s.listItem(active)} onMouseEnter={() => setHovered(i)}>
-              <span style={s.listTitle(active)}>{item.title}</span>
-              <div style={s.listMeta(active)}>
-                {filterWebDev(item.type) && <span style={s.listType}>{item.type}</span>}
-                <span style={s.listArrow}>↗</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="projects-preview" style={s.previewWrap}>
-        <div style={s.previewCard}>
-          <div style={s.previewGlow} />
-          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)', transform: `translateY(-${hovered * 100}%)` }}>
-            {allItems.map((item) => (
-              <div key={item.id} style={{ width: '100%', height: '100%', flexShrink: 0, position: 'relative', background: item.bg }}>
-                {item.image && <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />}
-              </div>
-            ))}
-          </div>
-          {preview.price && <span style={s.priceTag}>{preview.price}</span>}
-          {preview.link && <a href={preview.link} target="_blank" rel="noopener noreferrer" style={s.visitBtn}>View ↗</a>}
-          <div style={s.previewOverlay}>
-            <p style={s.previewTitle}>{preview.title}</p>
-            <div style={s.previewMeta}>
-              {preview.tags?.filter(filterWebDev).map(t => <span key={t} style={s.previewTag}>{t}</span>)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderResponsiveLayout = () => (
-    <>
-      <div className="projects-grid" style={s.gridContainer}>
-        {visibleItems.map((item, i) => (
-          <div key={item.id} className="project-card" style={s.card}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-6px) scale(1.01)';
-              e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)';
-              e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)';
-              e.currentTarget.style.background = 'rgba(255,255,255,0.9)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0px) scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.07)';
-              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)';
-              e.currentTarget.style.background = 'rgba(255,255,255,0.7)';
-            }}
-          >
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 1, background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.06), transparent)', opacity: .6, zIndex: 2 }} />
-            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at top right, ${item.accent}10, transparent 60%)`, pointerEvents: 'none', zIndex: 1 }} />
-
-            <div style={{ ...s.cardVisual, background: item.bg }}>
-              {item.image && <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />}
-              <div style={{ position: 'absolute', width: '45%', aspectRatio: '1/1', borderRadius: '50%', background: item.accent, filter: 'blur(50px)', opacity: 0.1, bottom: '-20%', right: '-10%', zIndex: 1 }} />
-              <span style={{ position: 'absolute', top: '14px', left: '16px', fontFamily: "'Inter', sans-serif", fontSize: 'clamp(10px, 0.8vw, 12px)', fontWeight: 600, letterSpacing: '2px', color: 'rgba(255,255,255,0.6)', zIndex: 2 }}>
-                0{i + 1}
-              </span>
-              {item.price && (
-                <span style={{ position: 'absolute', top: '12px', right: '14px', padding: '4px 10px', borderRadius: 999, fontFamily: "'Inter', sans-serif", fontSize: 'clamp(10px, 0.7vw, 12px)', fontWeight: 600, color: '#fff', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)', zIndex: 2 }}>
-                  {item.price}
-                </span>
-              )}
-            </div>
-
-            <div style={s.cardBody}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
-                {filterWebDev(item.cat || item.type) && (
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(9px, 0.7vw, 11px)', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: item.accent }}>
-                    {item.cat || item.type}
-                  </span>
-                )}
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(9px, 0.7vw, 11px)', color: 'rgba(0,0,0,0.35)' }}>
-                  {item.year}
-                </span>
-              </div>
-              <h3 className="card-heading">{item.title}</h3>
-              <p className="card-desc">{item.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {item.tags?.filter(filterWebDev).map(t => (
-                  <span key={t} style={{ padding: '4px 8px', borderRadius: 999, fontSize: 'clamp(9px, 0.6vw, 11px)', fontWeight: 500, fontFamily: "'Inter', sans-serif", background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.07)', color: 'rgba(0,0,0,0.45)' }}>
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {hasMore && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'clamp(24px, 4vw, 42px)' }}>
-          <button onClick={() => setExpanded(prev => !prev)} style={s.exploreBtn}
-            onMouseEnter={e => { if (!expanded) e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={e => { if (!expanded) e.currentTarget.style.transform = 'translateY(0px)'; }}>
-            {expanded ? 'Show Less' : 'Explore More'}
-          </button>
-        </div>
-      )}
-    </>
-  );
+  // ─── STYLES ──────────────────────────────────────────────────────────────
+  const mapHeight = isMobile ? 300 : 'calc(100vh - 180px)'
 
   return (
-    <section ref={ref} id="projects" style={s.section}>
-      <div style={s.topLine} />
-      <div style={s.inner}>
-        <div className="projects-header" style={s.headerRow}>
-          <p style={s.label}>Our portfolio</p>
-          <h2 style={s.heading}>{tab === 'projects' ? 'Selected Projects' : 'Marketplace'}</h2>
+    <section ref={ref} id="projects" style={{
+      background: '#f5f3ef',
+      padding: 'clamp(60px,8vw,112px) 0 clamp(50px,6vw,96px)',
+      position: 'relative',
+    }}>
+      <div style={{ padding: '0 clamp(16px,5vw,80px)' }}>
 
-          <div className="projects-toggle" style={s.toggleWrap}>
-            <div style={{
-              position: 'absolute', top: 4,
-              left: tab === 'projects' ? 4 : '50%',
-              width: 'calc(50% - 4px)', height: 'calc(100% - 8px)',
-              borderRadius: 999, background: 'linear-gradient(135deg, #6366f1, #0ea5e9)',
-              boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
-              transition: 'all .45s cubic-bezier(.22,1,.36,1)', zIndex: 1,
-            }} />
+        {/* ── HEADER ─────────────────────────────────────────────────────── */}
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          marginBottom: 'clamp(28px,4vw,52px)', gap: 20,
+        }}>
+          <div>
+            <p style={{ fontFamily: 'Syne,sans-serif', color: '#6366f1', fontSize: 11, letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 600, marginBottom: 10 }}>
+              Our portfolio
+            </p>
+            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, color: '#111', fontSize: 'clamp(26px,3.5vw,52px)', lineHeight: 1.1, letterSpacing: '-1px', marginBottom: 10 }}>
+              {tab === 'projects' ? 'Selected Projects' : 'Marketplace'}
+            </h2>
+            <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 420 }}>
+              {tab === 'projects'
+                ? 'Crafted experiences built for modern brands and immersive digital products.'
+                : 'Premium templates and assets designed for faster launches.'}
+            </p>
+          </div>
+
+          {/* Tab toggle */}
+          <div style={{ position: 'relative', display: 'flex', background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 999, padding: 4, width: 'clamp(240px,22vw,300px)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', flexShrink: 0 }}>
+            <div style={{ position: 'absolute', top: 4, left: tab === 'projects' ? 4 : '50%', width: 'calc(50% - 4px)', height: 'calc(100% - 8px)', borderRadius: 999, background: 'linear-gradient(135deg,#6366f1,#0ea5e9)', boxShadow: '0 4px 14px rgba(99,102,241,0.3)', transition: 'all .45s cubic-bezier(.22,1,.36,1)', zIndex: 1 }} />
             {['projects', 'marketplace'].map(t => (
-              <button key={t} style={s.toggleBtn(tab === t)} onClick={() => switchTab(t)}>
+              <button key={t} onClick={() => switchTab(t)} style={{ position: 'relative', zIndex: 2, flex: 1, padding: 'clamp(8px,0.8vw,12px) clamp(12px,1.5vw,24px)', border: 'none', borderRadius: 999, background: 'transparent', cursor: 'pointer', fontFamily: 'Inter,sans-serif', fontSize: 'clamp(11px,0.9vw,13px)', fontWeight: tab === t ? 600 : 500, color: tab === t ? '#fff' : 'rgba(0,0,0,0.45)', transition: 'color .35s ease' }}>
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             ))}
           </div>
-
-          <p style={s.sub}>
-            {tab === 'projects'
-              ? 'Crafted experiences built for modern brands and immersive digital products.'
-              : 'Premium templates and assets designed for faster launches.'}
-          </p>
         </div>
 
-        {isMobileView ? renderResponsiveLayout() : renderDesktopLayout()}
+        {/* ── BODY ───────────────────────────────────────────────────────── */}
+        <div style={{
+          opacity: fading ? 0 : 1,
+          transition: 'opacity .2s',
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: 'clamp(20px,3vw,40px)',
+          alignItems: 'start',
+        }}>
+
+          {/* ── LEFT: Card list ─────────────────────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, order: isMobile ? 1 : 0 }}>
+            {items.map((item, i) => {
+              const isActive = active === i
+              return (
+                <div
+                  key={item.id}
+                  onMouseEnter={() => setActive(i)}
+                  onClick={() => setActive(i)}
+                  style={{
+                    display: 'flex', gap: 14, alignItems: 'flex-start',
+                    padding: 'clamp(14px,1.6vw,20px)',
+                    borderRadius: 16, cursor: 'pointer',
+                    background: isActive ? 'rgba(99,102,241,0.06)' : 'rgba(0,0,0,0)',
+                    border: `1px solid ${isActive ? 'rgba(99,102,241,0.22)' : 'rgba(0,0,0,0.06)'}`,
+                    transition: 'all .3s cubic-bezier(.22,1,.36,1)',
+                    position: 'relative', overflow: 'hidden',
+                  }}
+                >
+                  {/* Active accent bar */}
+                  <div style={{ position: 'absolute', left: 0, top: '18%', bottom: '18%', width: 3, borderRadius: '0 4px 4px 0', background: 'linear-gradient(to bottom,#6366f1,#0ea5e9)', opacity: isActive ? 1 : 0, transition: 'opacity .3s' }} />
+
+                  {/* Thumbnail */}
+                  <div style={{ width: 44, height: 44, borderRadius: 10, background: item.bg, flexShrink: 0, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                    {item.image && <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
+                      <h3 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 'clamp(14px,1.2vw,17px)', color: '#111', lineHeight: 1.25, transition: 'color .25s' }}>
+                        {item.title}
+                      </h3>
+                      {item.price && (
+                        <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 11.5, fontWeight: 700, color: '#6366f1', whiteSpace: 'nowrap', background: 'rgba(99,102,241,0.1)', padding: '2px 8px', borderRadius: 6, flexShrink: 0 }}>
+                          {item.price}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Location pin */}
+                    {item.location && (
+                      <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 11.5, color: 'rgba(0,0,0,0.38)', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ fontSize: 10 }}>📍</span> {item.location}
+                      </p>
+                    )}
+
+                    {/* Description — expands when active */}
+                    <div style={{ overflow: 'hidden', maxHeight: isActive ? 80 : 0, opacity: isActive ? 1 : 0, transition: 'max-height .35s ease, opacity .3s ease', marginBottom: isActive ? 10 : 0 }}>
+                      <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 'clamp(12px,0.9vw,13px)', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6 }}>
+                        {item.desc}
+                      </p>
+                    </div>
+
+                    {/* View link — appears when active */}
+                    <div style={{ overflow: 'hidden', maxHeight: isActive ? 40 : 0, opacity: isActive ? 1 : 0, transition: 'max-height .35s ease, opacity .3s ease' }}>
+                      {item.link && (
+                        <a
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'Inter,sans-serif', fontSize: 12.5, fontWeight: 600, color: '#6366f1', textDecoration: 'none', background: 'rgba(99,102,241,0.1)', padding: '5px 12px', borderRadius: 8, transition: 'background .2s' }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.18)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
+                        >
+                          View Project ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* ── RIGHT: Sticky Map ─────────────────────────────────────────── */}
+          <div style={{
+            position: isMobile ? 'relative' : 'sticky',
+            top: isMobile ? 'auto' : 92,
+            height: mapHeight,
+            minHeight: isMobile ? 300 : 480,
+            borderRadius: 20,
+            overflow: 'hidden',
+            border: '1px solid rgba(0,0,0,0.09)',
+            boxShadow: '0 20px 56px rgba(0,0,0,0.1)',
+            order: isMobile ? 0 : 1,
+          }}>
+            <MapContainer
+              center={INDIA}
+              zoom={5}
+              style={{ width: '100%', height: '100%' }}
+              zoomControl={false}
+              scrollWheelZoom={false}
+              attributionControl={false}
+            >
+              <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                attribution='&copy; OpenStreetMap contributors &copy; CARTO'
+              />
+
+              {/* Smooth flyTo on active change */}
+              {current && <MapFlyTo lat={current.lat} lng={current.lng} />}
+
+              {/* Markers for all items */}
+              {items.map((item, i) => (
+                <Marker
+                  key={`${tab}-${item.id}`}
+                  position={[item.lat, item.lng]}
+                  icon={active === i ? PIN_ACTIVE : PIN_INACTIVE}
+                  eventHandlers={{ click: () => setActive(i) }}
+                />
+              ))}
+            </MapContainer>
+
+            {/* Floating active-project label */}
+            <div style={{
+              position: 'absolute', bottom: 14, left: 14, zIndex: 1000,
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              borderRadius: 12, padding: '8px 14px',
+              fontFamily: 'Inter,sans-serif', fontSize: 12.5, fontWeight: 500, color: '#111',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+              display: 'flex', alignItems: 'center', gap: 7,
+              transition: 'all .3s ease',
+              pointerEvents: 'none',
+            }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366f1', flexShrink: 0, boxShadow: '0 0 0 3px rgba(99,102,241,0.2)' }} />
+              {current?.location ?? current?.title}
+            </div>
+
+            {/* Attribution in corner */}
+            <div style={{ position: 'absolute', bottom: 14, right: 14, zIndex: 1000, fontFamily: 'Inter,sans-serif', fontSize: 10, color: 'rgba(0,0,0,0.3)', pointerEvents: 'none' }}>
+              © OpenStreetMap · CARTO
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-  );
-});
+  )
+})
 
-export default Projects;
+export default Projects

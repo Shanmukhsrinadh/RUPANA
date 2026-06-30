@@ -11,9 +11,9 @@
     "image": "https://i.ibb.co/xqGDGn00/Screenshot-2026-05-26-204433.png",
     "link": "https://srilakshmioilmills.in/",
     "year": "2025",
-    "lat": 16.3067,
-    "lng": 80.4365,
-    "location": "Guntur, Andhra Pradesh"
+    "lat": 17.7357809,
+    "lng": 83.3127459,
+    "location": "Visakhapatnam, Andhra Pradesh"
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "title": "CGRS Elite Events",
     "type": "Web Development",
     "tags": ["Events", "Wedding", "Planning"],
-    "desc": "Elegant event management website for CGRS Elite Events, specializing in weddings and corporate gatherings.",
+    "desc": "CGRS Elite Events is an event management company specializing in weddings, corporate events and special celebrations.",
     "bg": "linear-gradient(135deg,#2d1b4e,#4a2670,#7b3fa0)",
     "accent": "#c77dff",
     "image": "https://i.ibb.co/8nHynYTq/Screenshot-2026-04-12-023321.png",
@@ -37,15 +37,15 @@
     "title": "Vaijayanta",
     "type": "Web Development",
     "tags": ["Brand", "Showcase", "Responsive"],
-    "desc": "Modern brand showcase website for Vaijayanta with sleek design and smooth user experience.",
+    "desc": "Vaijayanta is a realestate platform focused on connecting buyers with verified plots, lands, and property investment opportunities. the platform aims to simplify property discover through a modern, transperent, and user-friendly digital experience.",
     "bg": "linear-gradient(135deg,#0f2027,#203a43,#2c5364)",
     "accent": "#4fc3f7",
     "image": "https://i.ibb.co/fzRdRT04/Screenshot-2026-04-12-120523.png",
     "link": "https://shanmukhsrinadh.github.io/Vaijayanta/",
     "year": "2025",
-    "lat": 19.0760,
-    "lng": 72.8777,
-    "location": "Mumbai, Maharashtra"
+    "lat": 17.7435104,
+    "lng": 83.3111450,
+    "location": "Visakhapatnam, Andhra Pradesh"
   },
   {
     "id": 4,
@@ -53,7 +53,7 @@
     "title": "Tarak Constructions",
     "type": "Web Development",
     "tags": ["Construction", "Real Estate", "Portfolio"],
-    "desc": "Professional construction company website showcasing projects, services, and building expertise.",
+    "desc": "Tarak Constructions is a construction company providing residential and commercial building solutions. They focus on quality workmanship, reliable project     execution, and delivering durable construction services tailored to client requirements.",
     "bg": "linear-gradient(135deg,#1a2a3a,#2d4a6e,#3a6b8c)",
     "accent": "#fca5a5",
     "image": "https://i.ibb.co/XkYFbh16/Screenshot-2026-05-28-225812.png",
@@ -61,7 +61,7 @@
     "year": "2025",
     "lat": 12.9716,
     "lng": 77.5946,
-    "location": "Bengaluru, Karnataka"
+    "location": "Visakhapatnam, Andhra Pradesh"
   },
   {
     "id": 5,

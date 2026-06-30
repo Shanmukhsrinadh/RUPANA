@@ -34,20 +34,47 @@ export default function Hero() {
   const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const [form, setForm] = useState({ name: '', phone: '', email: '', brief: '' })
   const [chips, setChips] = useState([])
-  const [sent, setSent] = useState(false)
+
+  // This evaluates true to blue text only when on wide displays AND explicitly at the top of the viewport
+  const [atHero, setAtHero] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return window.innerWidth > 760 && window.scrollY < 1
+  })
 
   useEffect(() => {
-    const handleResize = () => setScreenWidth(window.innerWidth)
+    const handleScroll = () => {
+      const isMobileSize = window.innerWidth <= 760
+      if (isMobileSize) {
+        setAtHero(false)
+        return
+      }
+      setAtHero(window.scrollY < 1)
+    }
+
+    const handleResize = () => {
+      const w = window.innerWidth
+      setScreenWidth(w)
+      if (w <= 760) {
+        setAtHero(false)
+      } else {
+        setAtHero(window.scrollY < 1)
+      }
+    }
+
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   const set = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
   const toggleChip = c => setChips(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c])
   const submit = e => {
     e.preventDefault()
-    setSent(true)
-    setTimeout(() => setSent(false), 2800)
+    alert('Consultation Request Submitted!')
   }
 
   const isMobile = screenWidth <= 760
@@ -74,6 +101,9 @@ export default function Hero() {
   const tickerHeight = isMobile ? 56 : 74
 
   const visibleChips = isSmall ? CHIPS.slice(0, 2) : CHIPS
+
+  // Synchronized style triggers
+  const isReelBlack = !atHero 
 
   return (
     <section style={{ 
@@ -194,19 +224,22 @@ export default function Hero() {
                   backdropFilter: 'blur(4px)',
                   WebkitBackdropFilter: 'blur(4px)',
                   color: '#ffffff',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  padding: isSmall ? '7px 16px' : '10px 22px',
-                  borderRadius: 11,
-                  fontSize: isSmall ? 12 : 13,
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  padding: isSmall ? '6px 12px' : '9px 20px',
+                  borderRadius: '999px',
+                  fontSize: isSmall ? '8.5px' : '10.5px',
                   fontWeight: 600,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: sent ? '0 4px 18px rgba(34,197,94,0.3)' : '0 4px 18px rgba(0,0,0,0.15)',
-                  whiteSpace: 'nowrap',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 3px 10px rgba(0,0,0,0.06)',
+                  whiteSpace: 'nowrap'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.95)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)'}
                 >
-                  {sent ? '✓ Brief Sent!' : '➤ Send Brief'}
+                  Book a Consultation
                 </button>
               </div>
             </form>
@@ -280,7 +313,7 @@ export default function Hero() {
                 fontSize: isMobile ? 12 : 14, 
                 letterSpacing: '2px', 
                 textTransform: 'uppercase', 
-                color: 'rgba(0,0,0,0.28)',
+                color: isReelBlack ? '#000000' : '#45A2F5', // Changes to black matching your navbar's exact tracking triggers
                 transition: 'color 0.65s cubic-bezier(0.25, 1, 0.5, 1)'
               }}>
                 {item}
@@ -289,7 +322,7 @@ export default function Hero() {
                 width: 4, 
                 height: 4, 
                 borderRadius: '50%', 
-                background: 'rgba(0,0,0,0.15)', 
+                background: isReelBlack ? 'rgba(0,0,0,0.15)' : 'rgba(69,162,245,0.4)', 
                 flexShrink: 0,
                 transition: 'background-color 0.65s cubic-bezier(0.25, 1, 0.5, 1)'
               }} />

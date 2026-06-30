@@ -1,2 +1,0 @@
-- [Rupana light theme](rupana-light-theme.md) — full site uses warm #f5f3ef base; indigo #6366f1 + sky #0ea5e9 accents; dark text #111; all 7 components converted.
-- [React-Leaflet + Vite dedupe fix](leaflet-vite-dedupe.md) — react-leaflet causes duplicate React instance error in Vite; fix is resolve.dedupe in vite.config.js.
